@@ -5,6 +5,7 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import MainLayout from "@/layouts/MainLayout";
+import { Head } from "@inertiajs/react";
 
 const items = [
     {
@@ -29,26 +30,33 @@ const items = [
 
 export default function FAQ() {
     return (
-        <MainLayout>
-            <div className="wrapper mb-20">
-                <h1 className="font-heading my-8 text-center text-4xl font-bold uppercase">
-                    FAQ
-                </h1>
-                <div className="mx-auto max-w-150">
-                    <Accordion defaultValue={["item-1"]}>
-                        {items.map((item) => (
-                            <AccordionItem key={item.value} value={item.value}>
-                                <AccordionTrigger className="font-semibold sm:text-lg">
-                                    {item.trigger}
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                    {item.content}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
+        <>
+            <Head title="FAQ" />
+
+            <MainLayout>
+                <div className="wrapper mb-20">
+                    <h1 className="font-heading my-8 text-center text-4xl font-bold uppercase">
+                        FAQ
+                    </h1>
+                    <div className="mx-auto max-w-150">
+                        <Accordion defaultValue={["item-1"]}>
+                            {items.map((item) => (
+                                <AccordionItem
+                                    key={item.value}
+                                    value={item.value}
+                                >
+                                    <AccordionTrigger className="font-semibold hover:no-underline sm:text-lg">
+                                        {item.trigger}
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                        {item.content}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </div>
                 </div>
-            </div>
-        </MainLayout>
+            </MainLayout>
+        </>
     );
 }

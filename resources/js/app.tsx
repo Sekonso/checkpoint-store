@@ -1,5 +1,10 @@
-import { createInertiaApp } from '@inertiajs/react'
+import { createInertiaApp } from "@inertiajs/react";
 
 createInertiaApp({
-    strictMode: true,
-})
+    pages: {
+        path: "./Pages",
+        extension: ".tsx",
+    },
+    title: (title) =>
+        title ? `${title} - Checkpoint Store` : "Checkpoint Store",
+});
