@@ -10,21 +10,51 @@ import { Head } from "@inertiajs/react";
 const items = [
     {
         value: "item-1",
-        trigger: "How do I reset my password?",
+        trigger: "What payment methods do you accept?",
         content:
-            "Click on 'Forgot Password' on the login page, enter your email address, and we'll send you a link to reset your password. The link will expire in 24 hours.",
+            "We accept major payment methods available through our checkout. Available options may vary depending on your location and the payment provider.",
     },
     {
         value: "item-2",
-        trigger: "Can I change my subscription plan?",
+        trigger: "How long does shipping take?",
         content:
-            "Yes, you can upgrade or downgrade your plan at any time from your account settings. Changes will be reflected in your next billing cycle.",
+            "Shipping times depend on your location and the delivery service selected during checkout. Estimated delivery information will be provided when you place your order.",
     },
     {
         value: "item-3",
-        trigger: "What payment methods do you accept?",
+        trigger: "Can I track my order?",
         content:
-            "We accept all major credit cards, PayPal, and bank transfers. All payments are processed securely through our payment partners.",
+            "Yes. Once your order has been shipped, you will receive tracking information when it is available. You can use the tracking number to follow your package's delivery status.",
+    },
+    {
+        value: "item-4",
+        trigger: "Can I cancel my order?",
+        content:
+            "Orders can only be cancelled before they have been processed for shipment. If you need to cancel an order, contact us as soon as possible with your order details.",
+    },
+    {
+        value: "item-5",
+        trigger: "Can I return or exchange an item?",
+        content:
+            "Eligible products can be returned or exchanged according to our return policy. Items generally need to be unused and in their original condition and packaging. Contact us before sending an item back.",
+    },
+    {
+        value: "item-6",
+        trigger: "What if my order arrives damaged?",
+        content:
+            "If your order arrives damaged, contact us as soon as possible and provide your order number along with clear photos of the damaged packaging and product. We will review the issue and help determine the appropriate solution.",
+    },
+    {
+        value: "item-7",
+        trigger: "Are your gaming products covered by warranty?",
+        content:
+            "Warranty coverage depends on the product and manufacturer. Please check the product information or contact us if you need help determining the warranty coverage for a specific item.",
+    },
+    {
+        value: "item-8",
+        trigger: "How can I contact Checkpoint Store?",
+        content:
+            "You can contact Checkpoint Store through the contact information provided on our website. For order-related questions, include your order number so we can assist you more efficiently.",
     },
 ];
 

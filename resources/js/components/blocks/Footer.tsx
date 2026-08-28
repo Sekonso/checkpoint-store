@@ -1,5 +1,6 @@
-import { CoordinateBox } from "@/components/CoordinateBox";
+import { CoordinateBox } from "@/components/coordinate-box";
 import { Link as InertiaLink } from "@inertiajs/react";
+import { Separator } from "../ui/separator";
 
 const footerNavigations = {
     navigation: [
@@ -52,7 +53,7 @@ export default function Footer() {
                     </div>
 
                     {/* Navigations */}
-                    <div className="flex flex-col sm:flex-row sm:justify-around gap-6">
+                    <div className="flex flex-col gap-6 sm:flex-row sm:justify-around">
                         {Object.entries(footerNavigations).map(
                             ([title, items]) => (
                                 <div key={title}>
@@ -78,15 +79,17 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Utility */}
-                <div className="flex items-center justify-between pt-8">
-                    <span className="text-muted-foreground whitespace-nowrap">
-                        Demo website - Sekonso
-                    </span>
-                    {/* <div className="h-px w-full bg-muted-foreground mx-4"></div> */}
+                {/* Attribution */}
+                <div className="flex items-center justify-center pt-8 sm:justify-between">
+                    <div className="text-muted-foreground w-full text-sm whitespace-nowrap">
+                        <Separator className="mobile-only w-full" />
+                        <div className="my-4 w-full text-center sm:text-left">
+                            Demo website - Sekonso
+                        </div>
+                    </div>
                     <img
-                        src="/images/controller(1).png"
-                        className="h-25 object-cover"
+                        src="/images/controller.png"
+                        className="table-desktop-only max-h-25 object-cover"
                     ></img>
                 </div>
             </div>

@@ -8,22 +8,22 @@ import {
     usePage,
     Head,
 } from "@inertiajs/react";
-import { InputField } from "@/components/form/InputField";
-import { FormError } from "@/components/form/FormError";
-import { AppPageProps } from "@/types/SessionTypes";
+import { InputField } from "@/components/form/input-field";
+import { FormError } from "@/components/form/form-error";
+import { FlashProps } from "@/types/inertia-props";
 
 export default function SignUp() {
-    const { flash } = usePage<AppPageProps>().props;
+    const { flash } = usePage<FlashProps>().props;
 
     // Render
     return (
         <>
             <Head title="Sign Up" />
-            
+
             <AuthLayout>
-                <Card className="w-120 p-8">
+                <Card className="w-full max-w-120 p-8">
                     <InertiaForm action="/sign-up" method="post">
-                        {({ errors }) => {
+                        {({ errors, processing }) => {
                             return (
                                 <>
                                     <FieldSet>
@@ -43,7 +43,7 @@ export default function SignUp() {
                                                 label="Username"
                                                 placeholder="My username"
                                                 autoComplete="username"
-                                                error={Boolean(errors.name)}
+                                                isError={Boolean(errors.name)}
                                                 errorMessage={errors.name}
                                                 required
                                             />
@@ -56,7 +56,7 @@ export default function SignUp() {
                                                 type="email"
                                                 placeholder="user@gmail.com"
                                                 autoComplete="email"
-                                                error={Boolean(errors.email)}
+                                                isError={Boolean(errors.email)}
                                                 errorMessage={errors.email}
                                                 required
                                             />
@@ -69,7 +69,9 @@ export default function SignUp() {
                                                 type="password"
                                                 placeholder="My secret password"
                                                 description="Min 8 characters, 1 number, and 1 symbol"
-                                                error={Boolean(errors.password)}
+                                                isError={Boolean(
+                                                    errors.password,
+                                                )}
                                                 errorMessage={errors.password}
                                                 required
                                             />
@@ -77,10 +79,10 @@ export default function SignUp() {
                                     </FieldSet>
 
                                     {/* Generic error message */}
-                                    {flash.error && (
+                                    {flash.formError === "error" && (
                                         <FormError
                                             title="Submission failed"
-                                            message={flash.error}
+                                            message={flash.formError}
                                         />
                                     )}
 
@@ -88,8 +90,11 @@ export default function SignUp() {
                                     <Button
                                         type="submit"
                                         className="bg-foreground text-background hover:bg-foreground/90 mt-8 w-full py-4 hover:shadow-md active:scale-[0.98]"
+                                        disabled={processing}
                                     >
-                                        Submit
+                                        {processing
+                                            ? "Submitting..."
+                                            : "Submit"}{" "}
                                     </Button>
 
                                     <div className="text-muted-foreground mt-4 flex justify-center gap-1">

@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rule;
+use App\Models\User;
 
 class SignUpRequest extends FormRequest
 {
@@ -37,7 +39,7 @@ class SignUpRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                'unique:users,email',
+                Rule::unique(User::class, 'email')
             ],
 
             'password' => [

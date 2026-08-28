@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Separator } from "@base-ui/react";
+import { ToastLoader } from "@/components/toast-loader";
 
 type AdminLayoutProps = {
     children: React.ReactNode;
@@ -8,24 +9,31 @@ type AdminLayoutProps = {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
     return (
-        <SidebarProvider>
-            <AppSidebar />
-            <main className="flex-1">
-                {/* Header */}
-                <header className="border-muted-foreground flex w-full items-center gap-4 border-b p-4">
-                    <SidebarTrigger />
+        <>
+            {/* Notifications */}
+            <ToastLoader />
 
-                    <Separator
-                        orientation="vertical"
-                        className="bg-muted-foreground h-6 w-px shrink-0"
-                    />
+            <SidebarProvider>
+                <AppSidebar />
+                <main className="flex-1">
+                    {/* Top section */}
+                    <section className="bg-background border-muted-foreground sticky top-0 z-999 flex w-full items-center gap-4 border-b p-4">
+                        <SidebarTrigger />
 
-                    <h1 className="font-heading text-xl font-bold">Admin</h1>
-                </header>
+                        <Separator
+                            orientation="vertical"
+                            className="bg-muted-foreground h-6 w-px shrink-0"
+                        />
 
-                {/* Content */}
-                <div className="p-4">{children}</div>
-            </main>
-        </SidebarProvider>
+                        <h1 className="font-heading text-xl font-bold">
+                            Admin
+                        </h1>
+                    </section>
+
+                    {/* Content */}
+                    <div className="px-4 py-8">{children}</div>
+                </main>
+            </SidebarProvider>
+        </>
     );
 }

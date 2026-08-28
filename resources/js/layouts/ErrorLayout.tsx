@@ -1,5 +1,5 @@
 import Footer from "@/components/blocks/Footer";
-import HeaderError from "@/components/blocks/HeaderError";
+import HeaderError from "@/components/blocks/header-error";
 
 type MainLayoutProps = {
     children: React.ReactNode;

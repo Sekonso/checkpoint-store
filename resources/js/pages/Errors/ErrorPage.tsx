@@ -15,16 +15,13 @@ const errorTitles: Record<ErrorStatus, string> = {
 };
 
 const errorDescriptions: Record<ErrorStatus, string> = {
-    403: "Sorry, you are forbidden from accessing this page.",
-    404: "Sorry, the page you are looking for could not be found.",
-    500: "Whoops, something went wrong on our servers.",
-    503: "Sorry, we are doing some maintenance. Please check back soon.",
+    403: "You are forbidden from accessing this page.",
+    404: "The page you are looking for could not be found.",
+    500: "Something went wrong on our servers.",
+    503: "The server is under maintenance. Please check back soon.",
 };
 
 export default function ErrorPage({ status }: ErrorPageProps) {
-    const page = usePage();
-    console.log("page data: ", page);
-
     const title = errorTitles[status];
     const description = errorDescriptions[status];
 

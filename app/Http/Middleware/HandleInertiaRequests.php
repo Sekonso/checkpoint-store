@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 
 class HandleInertiaRequests extends Middleware
@@ -14,7 +15,7 @@ class HandleInertiaRequests extends Middleware
      * @see https://inertiajs.com/server-side-setup#root-template
      *
      * @var string
-     */ 
+     */
     protected $rootView = 'app';
 
     /**
@@ -40,13 +41,13 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
 
             'flash' => [
-                'error' => fn() => $request->session()->get('error'),
-                'success' => fn() => $request->session()->get('success'),
+                'toast' => fn() => $request->session()->get('toast'),
+                'formError' => fn() => $request->session()->get('form_error')
             ],
 
-            'auth' => [
+            'auth' => fn() => [
                 'user' => Auth::user(),
-            ],
+            ]
         ];
     }
 }

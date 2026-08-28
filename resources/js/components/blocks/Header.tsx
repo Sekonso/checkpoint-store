@@ -3,7 +3,7 @@ import {
     Form as InertiaForm,
     usePage,
 } from "@inertiajs/react";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { Button } from "@/components/ui/button";
 import {
     Sheet,
@@ -14,7 +14,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { Menu, ShoppingBasket, User } from "lucide-react";
-import { AppPageProps } from "@/types/SessionTypes";
+import { AuthProps } from "@/types/inertia-props";
 import {
     HoverCard,
     HoverCardContent,
@@ -37,7 +37,7 @@ const userLinks = [
 ];
 
 export default function Header() {
-    const { url: activePage, props } = usePage<AppPageProps>();
+    const { url: activePage, props } = usePage<AuthProps>();
     const { user: authUser } = props.auth;
 
     // Render

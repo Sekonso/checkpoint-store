@@ -9,13 +9,10 @@ use App\Http\Requests\SignUpRequest;
 use App\Http\Requests\SignInRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class AuthController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
-
     public function signUp(SignUpRequest $request)
     {
         try {
@@ -35,7 +32,11 @@ class AuthController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            return back()->with('error', "Server failed to submit your data");
+            if (app()->environment(['local', 'development'])) {
+                throw $e;
+            }
+
+            return back()->with('form_error', 'Server failed to submit your data');
         }
     }
 
@@ -50,10 +51,7 @@ class AuthController extends Controller
             ];
 
             if (!Auth::attempt($credentials)) {
-                return back()->with(
-                    'error',
-                    'Invalid username or password.'
-                );
+                return redirect()->back()->with('form_error', 'Invalid password or username');
             }
 
             $request->session()->regenerate();
@@ -62,10 +60,11 @@ class AuthController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            return back()->with(
-                'error',
-                'Server failed to submit your data.'
-            );
+            if (app()->environment(['local', 'development'])) {
+                throw $e;
+            }
+
+            return back()->with('form_error', 'Server failed to submit your data');
         }
     }
     public function signOut(Request $request): RedirectResponse
