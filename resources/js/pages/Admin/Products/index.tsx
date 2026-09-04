@@ -1,28 +1,28 @@
-import { ArticlesTable } from "@/components/data-table/articles-table";
+import { ProductsTable } from "@/components/data-table/product-table";
 import { FilterBar, FilterOption } from "@/components/filter-bar";
 import { Pagination } from "@/components/pagination";
 import { SearchBar } from "@/components/search-bar";
 import AdminLayout from "@/layouts/AdminLayout";
 import { PaginatedProps } from "@/types/inertia-props";
-import { Article } from "@/types/models";
+import { Product } from "@/types/models";
 import { PageProps } from "@inertiajs/core";
 import { Head, usePage } from "@inertiajs/react";
 
-interface AdminArticleInertiaProps extends PageProps {
+interface AdminProductsInertiaProps extends PageProps {
     querySearch: string;
-    queryStatus: string;
-    paginatedArticles: PaginatedProps<Article>;
+    queryDisplay: string;
+    paginatedProducts: PaginatedProps<Product>;
 }
 
-export default function AdminArticlePage() {
-    const { querySearch, queryStatus, paginatedArticles } =
-        usePage<AdminArticleInertiaProps>().props;
+export default function AdminProductsPage() {
+    const { querySearch, queryDisplay, paginatedProducts } =
+        usePage<AdminProductsInertiaProps>().props;
 
-    const status = ["all", "draft", "published", "archived"];
-    const statusOptions: FilterOption[] = status.map((item) => ({
-        value: item,
-        label: item,
-    }));
+    const displayOptions: FilterOption[] = [
+        { value: "", label: "all" },
+        { value: "true", label: "displayed" },
+        { value: "false", label: "non-displayed" },
+    ];
 
     return (
         <>
@@ -31,7 +31,7 @@ export default function AdminArticlePage() {
             <AdminLayout>
                 <header className="mb-10">
                     <h1 className="text-center text-2xl font-bold sm:text-3xl">
-                        All Articles
+                        All Products
                     </h1>
                 </header>
 
@@ -40,31 +40,30 @@ export default function AdminArticlePage() {
                     <div className="w-full">
                         <SearchBar
                             param="search"
-                            url="/admin/articles"
+                            url="/admin/products"
                             initialValue={querySearch}
                             size="small"
                         />
                     </div>
                     <FilterBar
-                        param="status"
-                        url="/admin/articles"
-                        initialValue={queryStatus}
-                        options={statusOptions}
-                        size="small"
+                        param="display"
+                        url="/admin/products"
+                        initialValue={queryDisplay}
+                        options={displayOptions}
                     />
                 </div>
 
                 {/* Content */}
                 <div>
-                    {paginatedArticles.data.length > 0 ? (
+                    {paginatedProducts.data.length > 0 ? (
                         <>
-                            <ArticlesTable articles={paginatedArticles.data} />
+                            <ProductsTable products={paginatedProducts.data} />
                             <div className="my-4"></div>
-                            <Pagination {...paginatedArticles} />
+                            <Pagination {...paginatedProducts} />
                         </>
                     ) : (
                         <div className="font-heading py-12 text-center text-xl font-semibold">
-                            <span>There is no article here...</span>
+                            <span>There is no product here...</span>
                         </div>
                     )}
                 </div>

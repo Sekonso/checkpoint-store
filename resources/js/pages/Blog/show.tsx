@@ -50,7 +50,7 @@ export default function BlogDeailPage() {
                                 <div className="text-muted-foreground flex items-center gap-2">
                                     <Calendar size={12} />
                                     <span className="text-sm">
-                                        {formatDate(article.created_at)}
+                                        {formatDate(article.published_at)}
                                     </span>
                                 </div>
                             </div>

@@ -53,12 +53,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             Products: [
                 {
                     name: "All Products",
-                    url: "#",
+                    url: "/admin/products",
                     icon: <DatabaseIcon />,
                 },
                 {
                     name: "Create Products",
-                    url: "#",
+                    url: "/admin/products/create",
                     icon: <Plus />,
                 },
             ],

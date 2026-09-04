@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useForm } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 import { SubmitEvent, useState } from "react";
 
 interface SearchBarProps {
@@ -16,7 +16,6 @@ export function SearchBar({
     size = "medium",
 }: SearchBarProps) {
     const [searchValue, setSearchValue] = useState<string>(initialValue || "");
-    const { get } = useForm();
 
     const submitHandler = (e: SubmitEvent) => {
         e.preventDefault();
@@ -31,9 +30,8 @@ export function SearchBar({
 
         params.delete("page");
 
-        get(`${url}?${params.toString()}`, {
-            preserveState: true,
-            preserveScroll: true,
+        router.get(`${url}?${params.toString()}`, {
+            replace: true,
         });
     };
 

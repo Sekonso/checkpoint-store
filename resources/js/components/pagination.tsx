@@ -1,11 +1,8 @@
 import {
     Pagination as ShadcnPagination,
     PaginationContent,
-    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
 } from "@/components/ui/pagination";
 import { PaginatedProps } from "@/types/inertia-props";
 import {

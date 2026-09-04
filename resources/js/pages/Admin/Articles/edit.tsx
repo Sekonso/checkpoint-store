@@ -49,8 +49,8 @@ export default function AdminArticleEditPage() {
 
                 {/* Form */}
                 <InertiaForm
-                    action={`/admin/articles/${article.id}/update`}
-                    method="patch"
+                    action={`/admin/articles/${article.id}`}
+                    method="put"
                     transform={(data) => data}
                     className="mx-auto max-w-250"
                 >
@@ -108,7 +108,7 @@ export default function AdminArticleEditPage() {
                                             name="featured_image"
                                             label="Featured image"
                                             defaultPreview={`/storage/articles/featured/${article.featured_image}`}
-                                            description="Upload a JPG or PNG image."
+                                            description="Upload a JPG or PNG image (Max 2MB)"
                                             isError={Boolean(
                                                 errors.featured_image,
                                             )}

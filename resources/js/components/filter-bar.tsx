@@ -1,5 +1,5 @@
-import { useForm } from "@inertiajs/react";
-import { useEffect, useState } from "react";
+import { router } from "@inertiajs/react";
+import { useState } from "react";
 import {
     NativeSelect,
     NativeSelectOption,
@@ -24,30 +24,28 @@ export function FilterBar({
     initialValue = "",
     options,
 }: FilterBarProps) {
-    const [selectedValue, setSelectedValue] = useState(initialValue);
-    const { get } = useForm();
-
-    useEffect(() => {
+    function filterChangeHandler(value: string) {
         const params = new URLSearchParams(window.location.search);
 
-        if (selectedValue) {
-            params.set(param, selectedValue);
+        if (value) {
+            params.set(param, value);
         } else {
             params.delete(param);
         }
 
         params.delete("page");
 
-        get(`${url}?${params.toString()}`, {
-            preserveState: true,
-            preserveScroll: true,
+        const query = params.toString();
+
+        router.get(query ? `${url}?${query}` : url, {
+            replace: true,
         });
-    }, [selectedValue]);
+    }
 
     return (
         <NativeSelect
-            value={selectedValue}
-            onChange={(e) => setSelectedValue(e.target.value)}
+            value={initialValue}
+            onChange={(e) => filterChangeHandler(e.target.value)}
             className="border-0"
         >
             {options.map((option) => (

@@ -14,10 +14,27 @@ export interface Article {
     featured_image: string;
     tags: ArticleTag[];
     status: "draft" | "published" | "archived";
-    created_at: string;
+    published_at: string | null;
 }
 
 export interface ArticleTag {
     id: number;
     name: string;
 }
+
+export interface Product {
+    id: number;
+    category_id: number;
+    name: string;
+    slug: string;
+    description: string;
+    price: number;
+    stock: number;
+    in_display: boolean;
+}
+
+export interface ProductCategory {
+    id: number;
+    name: string;
+}
+

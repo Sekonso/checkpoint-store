@@ -1,9 +1,9 @@
 import { FieldDescription } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { InputHTMLAttributes } from "react";
+import { TextareaHTMLAttributes } from "react";
 import { FieldWrapper } from "@/components/form/field-wrapper";
+import { Textarea } from "@/components/ui/textarea";
 
-interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+interface TextAreaFieldProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
     id: string;
     name: string;
     label: string;
@@ -13,7 +13,7 @@ interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
     errorMessage?: string;
 }
 
-export function InputField({
+export function TextAreaField({
     id,
     name,
     label,
@@ -22,7 +22,7 @@ export function InputField({
     isError = false,
     errorMessage = "",
     ...props
-}: InputFieldProps) {
+}: TextAreaFieldProps) {
     return (
         <FieldWrapper
             id={id}
@@ -31,7 +31,7 @@ export function InputField({
             isError={isError}
             errorMessage={errorMessage}
         >
-            <Input
+            <Textarea
                 {...props}
                 id={id}
                 name={name}

@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use App\Models\Article;
 use App\Models\ArticleTag;
-use App\Models\ArticleTagRelation;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
 use Illuminate\Support\Facades\DB;
@@ -19,18 +19,20 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         $query_search = $request->query('search');
-        $query_status = $request->query('status', 'all');
+        $query_status = $request->query('status');
 
         $paginated_articles = Article::query()
             ->with('user')
-            ->when($query_status !== 'all', function ($query) use ($query_status) {
-                $query->where('status', $query_status);
-            })
             ->when($query_search, function ($query, $query_search) {
                 $query->whereRaw(
                     'LOWER(title) LIKE LOWER(?)',
                     ["%{$query_search}%"]
                 );
+            })
+            ->when($query_status, function ($query) use ($query_status) {
+                if (\in_array($query_status, ['draft', 'published', 'archived'])) {
+                    $query->where('status', $query_status);
+                }
             })
             ->latest('created_at')
             ->paginate(15);
@@ -221,8 +223,31 @@ class ArticleController extends Controller
 
     public function destroy(Article $article)
     {
-        $article->delete();
+        $image_filename = $article->featured_image;
 
-        return back();
+        try {
+            // Delete article data
+            DB::transaction(function () use ($article) {
+                $article->delete();
+            });
+
+            // Delete file
+            Storage::disk('public')->delete(
+                "articles/featured/{$image_filename}"
+            );
+
+            // Success
+            return back();
+        } catch (\Throwable $e) {
+            report($e);
+
+            if (app()->environment(['local', 'development'])) {
+                throw $e;
+            }
+
+            throw ValidationException::withMessages([
+                'delete' => 'Failed to delete product.',
+            ]);
+        }
     }
 }

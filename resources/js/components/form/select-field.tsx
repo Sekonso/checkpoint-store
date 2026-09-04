@@ -1,9 +1,4 @@
-import {
-    Field,
-    FieldDescription,
-    FieldLabel,
-    FieldError,
-} from "@/components/ui/field";
+import { FieldDescription } from "@/components/ui/field";
 import {
     NativeSelect,
     NativeSelectOption,
@@ -25,6 +20,7 @@ interface SelectFieldProps extends Omit<
     label: string;
     options: SelectFieldOptions;
     defaultValue?: string;
+    placeholder?: string;
     description?: string;
     required?: boolean;
     isError?: boolean;
@@ -37,10 +33,11 @@ export function SelectField({
     label,
     options,
     defaultValue,
+    placeholder,
     description,
-    required,
-    isError,
-    errorMessage,
+    required = false,
+    isError = false,
+    errorMessage = "",
     ...props
 }: SelectFieldProps) {
     return (
@@ -59,11 +56,16 @@ export function SelectField({
                 aria-invalid={isError}
                 aria-required={required}
             >
-                {options.map(({ name, value }, idx) => (
-                    <NativeSelectOption
-                        key={idx}
-                        value={value}
-                    >
+                {/* placeholder */}
+                {placeholder && (
+                    <NativeSelectOption value="" disabled>
+                        {placeholder}
+                    </NativeSelectOption>
+                )}
+
+                {/* options */}
+                {options.map(({ name, value }) => (
+                    <NativeSelectOption key={value} value={value}>
                         {name}
                     </NativeSelectOption>
                 ))}

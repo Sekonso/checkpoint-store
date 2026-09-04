@@ -99,7 +99,7 @@ export default function AdminArticleCreatePage() {
                                             id="featured_image"
                                             name="featured_image"
                                             label="Featured image"
-                                            description="Upload a JPG or PNG image."
+                                            description="Upload a JPG or PNG image (Max 2MB)"
                                             isError={Boolean(
                                                 errors.featured_image,
                                             )}
