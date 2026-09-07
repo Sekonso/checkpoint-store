@@ -14,14 +14,14 @@ class BlogController extends Controller
 
         $articles = Article::query()
             ->where('status', 'published')
-            ->when($query_search, function ($query, $query_search) {
-                $query->whereRaw(
-                    'LOWER(title) LIKE LOWER(?)',
-                    ["%{$query_search}%"]
-                );
-            })
+            ->when(
+                $query_search,
+                fn($query, $query_search) =>
+                $query->whereLike('title', "%{$query_search}%", caseSensitive: false)
+            )
             ->latest('created_at')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Blog/index', [
             'querySearch' => $query_search,
@@ -29,14 +29,9 @@ class BlogController extends Controller
         ]);
     }
 
-    public function show(Request $request)
+    public function show(Article $article)
     {
-        $slug = $request->route('slug');
-
-        $article = Article::query()
-            ->with('tags')
-            ->where('slug', $slug)
-            ->firstOrFail();
+        $article = $article->load('tags');
 
         return Inertia::render('Blog/show', [
             'article' => $article

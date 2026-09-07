@@ -38,6 +38,14 @@ export function Pagination({
     const isFirstPage = current_page === 1;
     const isLastPage = current_page === last_page;
 
+    function pageUrl(page: number) {
+        const url = new URL(window.location.href);
+
+        url.searchParams.set("page", String(page));
+
+        return `${url.pathname}?${url.searchParams.toString()}`;
+    }
+
     return (
         <ShadcnPagination>
             <PaginationContent>
@@ -74,7 +82,7 @@ export function Pagination({
                     return (
                         <PaginationItem key={page}>
                             <PaginationLink
-                                href={`${path}?page=${page}`}
+                                href={pageUrl(page)}
                                 isActive={page === current_page}
                             >
                                 {page}

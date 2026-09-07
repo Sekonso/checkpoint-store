@@ -47,7 +47,13 @@ class HandleInertiaRequests extends Middleware
 
             'auth' => fn() => [
                 'user' => Auth::user(),
-            ]
+            ],
+
+            'cart' => fn() =>
+                Auth::user()
+                        ?->cart()
+                    ->with('items.product')
+                    ->first(),
         ];
     }
 }

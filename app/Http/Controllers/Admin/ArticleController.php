@@ -23,19 +23,18 @@ class ArticleController extends Controller
 
         $paginated_articles = Article::query()
             ->with('user')
-            ->when($query_search, function ($query, $query_search) {
-                $query->whereRaw(
-                    'LOWER(title) LIKE LOWER(?)',
-                    ["%{$query_search}%"]
-                );
-            })
-            ->when($query_status, function ($query) use ($query_status) {
-                if (\in_array($query_status, ['draft', 'published', 'archived'])) {
-                    $query->where('status', $query_status);
-                }
-            })
+            ->when(
+                $query_search,
+                fn($query, $query_search) =>
+                $query->whereLike('title', "%{$query_search}%", caseSensitive: false)
+            )
+            ->when(
+                \in_array($query_status, ['draft', 'published', 'archived']),
+                fn($query) => $query->where('status', $query_status)
+            )
             ->latest('created_at')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return Inertia::render('Admin/Articles/index', [
             'querySearch' => $query_search,

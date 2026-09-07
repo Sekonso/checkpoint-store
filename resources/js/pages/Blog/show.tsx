@@ -11,7 +11,7 @@ interface BlogDetailPageProps extends PageProps {
     article: Article;
 }
 
-export default function BlogDeailPage() {
+export default function BlogDetailPage() {
     const { article } = usePage<BlogDetailPageProps>().props;
 
     const breadcrumb = [
@@ -49,9 +49,11 @@ export default function BlogDeailPage() {
                                 {/* Date */}
                                 <div className="text-muted-foreground flex items-center gap-2">
                                     <Calendar size={12} />
-                                    <span className="text-sm">
-                                        {formatDate(article.published_at)}
-                                    </span>
+                                    {article.published_at && (
+                                        <span className="text-sm">
+                                            {formatDate(article.published_at)}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>

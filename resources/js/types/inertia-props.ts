@@ -1,5 +1,5 @@
 import type { PageProps } from "@inertiajs/core";
-import { Article, User } from "@/types/models";
+import { Article, Cart, User } from "@/types/models";
 
 // Shared: flash
 export interface FlashProps extends PageProps {
@@ -16,8 +16,13 @@ export interface AuthProps extends PageProps {
     };
 }
 
+// Shared: cart
+export interface CartProps extends PageProps {
+    cart: Cart | null;
+}
+
 // Shared: all
-export interface InertiaSharedProps extends FlashProps, AuthProps {}
+export interface InertiaSharedProps extends FlashProps, AuthProps, CartProps {}
 
 // Data: pagination
 export interface PaginationLink {

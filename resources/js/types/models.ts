@@ -2,6 +2,8 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    phone: string | null;
+    address: string | null;
     role: "admin" | "customer";
 }
 
@@ -31,6 +33,15 @@ export interface Product {
     price: number;
     stock: number;
     in_display: boolean;
+    images: ProductImage[];
+    category: ProductCategory | null;
+}
+
+export interface ProductImage {
+    id: number;
+    product_id: number;
+    filename: string;
+    order: number;
 }
 
 export interface ProductCategory {
@@ -38,3 +49,16 @@ export interface ProductCategory {
     name: string;
 }
 
+export interface Cart {
+    id: number;
+    user_id: number;
+    items: CartItem[];
+}
+
+export interface CartItem {
+    id: number;
+    cart_id: number;
+    product_id: number;
+    quantity: number;
+    product: Product;
+}

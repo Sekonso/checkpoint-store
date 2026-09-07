@@ -19,14 +19,12 @@ class ProductSeeder extends Seeder
         Product::factory()
             ->count(10)
             ->withCategory()
-            ->withImages()
             ->create();
 
         Product::factory()
             ->count(10)
             ->withCategory()
             ->display()
-            ->withImages()
             ->create();
     }
 }

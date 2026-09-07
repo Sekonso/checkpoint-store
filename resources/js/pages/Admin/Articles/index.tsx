@@ -42,7 +42,7 @@ export default function AdminArticlePage() {
                             param="search"
                             url="/admin/articles"
                             initialValue={querySearch}
-                            size="small"
+                            inputClassName="h-10"
                         />
                     </div>
                     <FilterBar
@@ -50,7 +50,7 @@ export default function AdminArticlePage() {
                         url="/admin/articles"
                         initialValue={queryStatus}
                         options={statusOptions}
-                        size="small"
+                        selectClassName="h-10"
                     />
                 </div>
 

@@ -22,22 +22,18 @@ class ProductController extends Controller
         $query_display = $request->query('display');
 
         $paginatedProducts = Product::query()
-            ->when($query_search, function ($query, $search) {
-                $query->whereRaw(
-                    'LOWER(name) LIKE LOWER(?)',
-                    ["%{$search}%"]
-                );
-            })
-            ->when($query_display, function ($query) use ($query_display) {
-                if (in_array($query_display, ["true", "false"])) {
-                    $query->where(
-                        'in_display',
-                        filter_var($query_display, FILTER_VALIDATE_BOOLEAN)
-                    );
-                }
-            })
+            ->when(
+                $query_search,
+                fn($query, $query_search) =>
+                $query->whereLike('name', "%{$query_search}%", caseSensitive: false)
+            )
+            ->when(
+                \in_array($query_display, ['true', 'false']),
+                fn($query) => $query->where('in_display', filter_var($query_display, FILTER_VALIDATE_BOOLEAN))
+            )
             ->latest()
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return Inertia::render('Admin/Products/index', [
             'querySearch' => $query_search,

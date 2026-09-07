@@ -57,7 +57,6 @@ export default function AdminProductsEditPage() {
                     className="mx-auto max-w-250"
                 >
                     {({ errors, processing }) => {
-                        console.log(errors);
                         return (
                             <>
                                 <FieldSet>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import { Menu, ShoppingBasket, User } from "lucide-react";
 import { AuthProps } from "@/types/inertia-props";
+import { CartProps } from "@/types/inertia-props";
 import {
     HoverCard,
     HoverCardContent,
@@ -31,14 +32,20 @@ const headerLinks = [
 ];
 
 const userLinks = [
-    { name: "Profile", href: "/profile" },
+    { name: "Profile", href: "/my-mine" },
     { name: "My Cart", href: "/cart" },
     { name: "Purchase History", href: "/purchases" },
 ];
 
 export default function Header() {
-    const { url: activePage, props } = usePage<AuthProps>();
+    const { url, props } = usePage<AuthProps & CartProps>();
     const { user: authUser } = props.auth;
+    const cartCount = props.cart?.items.reduce(
+        (total, item) => total + item.quantity,
+        0,
+    ) ?? 0;
+
+    const activePage = url.split("?")[0];
 
     // Render
     return (
@@ -77,9 +84,14 @@ export default function Header() {
                 <div className="desktop-only">
                     {authUser ? (
                         <div className="flex gap-2">
-                            <InertiaLink href="/cart">
+                            <InertiaLink href="/cart" className="relative">
                                 <Button className="border-primary bg-transparent">
                                     <ShoppingBasket />
+                                    {cartCount > 0 && (
+                                        <span className="bg-primary text-primary-foreground absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full text-[10px] font-bold">
+                                            {cartCount}
+                                        </span>
+                                    )}
                                 </Button>
                             </InertiaLink>
                             <HoverCard>
@@ -87,7 +99,7 @@ export default function Header() {
                                     delay={100}
                                     closeDelay={200}
                                     render={
-                                        <InertiaLink href="/profile">
+                                        <InertiaLink href="/my-mine">
                                             <Button className="border-primary bg-transparent">
                                                 <User />
                                             </Button>

@@ -1,5 +1,5 @@
 import { router } from "@inertiajs/react";
-import { useState } from "react";
+import { cn } from "@/lib/utils";
 import {
     NativeSelect,
     NativeSelectOption,
@@ -16,6 +16,8 @@ interface FilterBarProps {
     initialValue?: string;
     options: FilterOption[];
     size?: "small" | "medium";
+    className?: string;
+    selectClassName?: string;
 }
 
 export function FilterBar({
@@ -23,6 +25,8 @@ export function FilterBar({
     url,
     initialValue = "",
     options,
+    className,
+    selectClassName,
 }: FilterBarProps) {
     function filterChangeHandler(value: string) {
         const params = new URLSearchParams(window.location.search);
@@ -46,7 +50,8 @@ export function FilterBar({
         <NativeSelect
             value={initialValue}
             onChange={(e) => filterChangeHandler(e.target.value)}
-            className="border-0"
+            className={cn("border-0", className)}
+            selectClassName={selectClassName}
         >
             {options.map((option) => (
                 <NativeSelectOption key={option.value} value={option.value}>

@@ -15,8 +15,6 @@ interface BlogPageProps extends PageProps {
 export default function BlogPage() {
     const { querySearch, articles } = usePage<BlogPageProps>().props;
 
-    console.log(querySearch);
-
     return (
         <>
             <Head title="News and Blog" />
@@ -36,6 +34,7 @@ export default function BlogPage() {
                             param="search"
                             url="/blog"
                             initialValue={querySearch}
+                            className="h-12"
                         />
                     </div>
 
