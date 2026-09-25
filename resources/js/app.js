@@ -2,7 +2,7 @@ import { createInertiaApp } from "@inertiajs/react";
 
 createInertiaApp({
     pages: {
-        path: "./Pages",
+        path: "./pages",
         extension: ".tsx",
     },
     title: (title) =>

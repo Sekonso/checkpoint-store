@@ -6,6 +6,7 @@ export interface FlashProps extends PageProps {
     flash: {
         toast: { type: "normal" | "success" | "error"; message: string };
         formError: string;
+        openPayment: boolean;
     };
 }
 

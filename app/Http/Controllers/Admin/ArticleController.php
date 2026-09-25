@@ -3,111 +3,62 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
-use Inertia\Inertia;
-use App\Models\Article;
-use App\Models\ArticleTag;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Article;
+use App\Models\ArticleTag;
+use App\Services\ArticleService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 class ArticleController extends Controller
 {
+    public function __construct(private readonly ArticleService $article) {}
+
     public function index(Request $request)
     {
         $query_search = $request->query('search');
         $query_status = $request->query('status');
 
-        $paginated_articles = Article::query()
-            ->with('user')
-            ->when(
-                $query_search,
-                fn($query, $query_search) =>
-                $query->whereLike('title', "%{$query_search}%", caseSensitive: false)
-            )
-            ->when(
-                \in_array($query_status, ['draft', 'published', 'archived']),
-                fn($query) => $query->where('status', $query_status)
-            )
-            ->latest('created_at')
-            ->paginate(15)
-            ->withQueryString();
-
         return Inertia::render('Admin/Articles/index', [
             'querySearch' => $query_search,
             'queryStatus' => $query_status,
-            'paginatedArticles' => $paginated_articles,
+            'paginatedArticles' => $this->article->paginateForAdmin($query_search, $query_status),
         ]);
     }
 
     public function create()
     {
-        $tags_options = ArticleTag::select('id', 'name')
-            ->get()
-            ->map(fn($tag) => [
-                'name' => $tag->name,
-                'value' => (string) $tag->id,
-            ]);
-
-        $status_options = collect(['draft', 'published', 'archived'])->map(fn($status) => [
-            'name' => $status,
-            'value' => (string) $status,
-        ]);
-
         return Inertia::render('Admin/Articles/create', [
-            'tagOptions' => $tags_options,
-            'statusOptions' => $status_options,
+            'tagOptions' => $this->tagOptions(),
+            'statusOptions' => $this->statusOptions(),
         ]);
     }
 
     public function store(StoreArticleRequest $request)
     {
-        $validated = $request->validated();
         $author = Auth::user();
-        $storedPath = null;
 
         try {
-            DB::transaction(function () use ($request, $author, $validated, &$storedPath) {
-                $article = Article::create([
-                    'title' => $validated['title'],
-                    'user_id' => $author->id,
-                    'featured_image' => null,
-                    'content' => $validated['content'],
-                    'status' => $validated['status'],
-                ]);
+            $this->article->create(
+                $request->safe()->only(['title', 'content', 'status', 'tags']),
+                $author->id,
+                $request->file('featured_image'),
+            );
 
-                // Storing tag
-                $article->tags()->sync($validated['tags']);
-
-                // Storing file
-                $file = $request->file('featured_image');
-
-                $storedPath = $file->store('articles/featured', 'public');
-
-                $article->update([
-                    'featured_image' => basename($storedPath),
-                ]);
-            });
-
-            // Success
-            return redirect("/admin/articles")->with(
+            return redirect('/admin/articles')->with(
                 'toast',
                 [
                     'type' => 'success',
-                    'message' => 'New article created successfully'
+                    'message' => 'New article created successfully',
                 ]
             );
         } catch (\Throwable $e) {
             report($e);
 
-            if ($storedPath) {
-                Storage::disk('public')->delete($storedPath);
-            }
-
-            if (app()->environment(['local', 'development'])) {
+            if (app()->hasDebugModeEnabled()) {
                 throw $e;
             }
 
@@ -127,78 +78,34 @@ class ArticleController extends Controller
 
     public function edit(Article $article)
     {
-        $tags = $article->tags()->get();
-
-        $tag_options = ArticleTag::select('id', 'name')
-            ->get()
-            ->map(fn($tag) => [
-                'name' => $tag->name,
-                'value' => (string) $tag->id,
-            ]);
-
-        $status_options = collect(['draft', 'published', 'archived'])->map(fn($status) => [
-            'name' => $status,
-            'value' => (string) $status,
-        ]);
-
         return Inertia::render('Admin/Articles/edit', [
             'article' => $article,
-            'tags' => $tags,
-            'tagOptions' => $tag_options,
-            'statusOptions' => $status_options,
+            'tags' => $article->tags()->get(),
+            'tagOptions' => $this->tagOptions(),
+            'statusOptions' => $this->statusOptions(),
         ]);
     }
 
     public function update(UpdateArticleRequest $request, Article $article)
     {
-        $validated = $request->validated();
-        $storedPath = null;
-
         try {
-            DB::transaction(function () use ($request, $validated, $article, &$storedPath) {
-                $article->update([
-                    'title' => $validated['title'],
-                    'content' => $validated['content'],
-                    'status' => $validated['status'],
-                ]);
+            $this->article->update(
+                $article,
+                $request->safe()->only(['title', 'content', 'status', 'tags']),
+                $request->file('featured_image'),
+            );
 
-                // Updating tag
-                $article->tags()->sync($validated['tags']);
-
-                // Updating file
-                if ($request->hasFile('featured_image')) {
-                    $oldImage = $article->featured_image;
-
-                    $file = $request->file('featured_image');
-
-                    $storedPath = $file->store('articles/featured', 'public');
-
-                    $article->update([
-                        'featured_image' => basename($storedPath),
-                    ]);
-
-                    if ($oldImage) {
-                        Storage::disk('public')->delete("articles/featured/{oldImage}");
-                    }
-                }
-            });
-
-            // Success
             return back()->with(
                 'toast',
                 [
                     'type' => 'success',
-                    'message' => 'Article edited successfully'
+                    'message' => 'Article edited successfully',
                 ]
             );
         } catch (\Throwable $e) {
             report($e);
 
-            if ($storedPath) {
-                Storage::disk('public')->delete($storedPath);
-            }
-
-            if (app()->environment(['local', 'development'])) {
+            if (app()->hasDebugModeEnabled()) {
                 throw $e;
             }
 
@@ -213,34 +120,21 @@ class ArticleController extends Controller
 
     public function archive(Article $article)
     {
-        $article->update([
-            'status' => 'archived',
-        ]);
+        $this->article->archive($article);
 
         return back();
     }
 
     public function destroy(Article $article)
     {
-        $image_filename = $article->featured_image;
-
         try {
-            // Delete article data
-            DB::transaction(function () use ($article) {
-                $article->delete();
-            });
+            $this->article->delete($article);
 
-            // Delete file
-            Storage::disk('public')->delete(
-                "articles/featured/{$image_filename}"
-            );
-
-            // Success
             return back();
         } catch (\Throwable $e) {
             report($e);
 
-            if (app()->environment(['local', 'development'])) {
+            if (app()->hasDebugModeEnabled()) {
                 throw $e;
             }
 
@@ -248,5 +142,24 @@ class ArticleController extends Controller
                 'delete' => 'Failed to delete product.',
             ]);
         }
+    }
+
+    private function tagOptions(): array
+    {
+        return ArticleTag::select('id', 'name')
+            ->get()
+            ->map(fn ($tag) => [
+                'name' => $tag->name,
+                'value' => (string) $tag->id,
+            ])
+            ->all();
+    }
+
+    private function statusOptions(): array
+    {
+        return collect(['draft', 'published', 'archived'])->map(fn ($status) => [
+            'name' => $status,
+            'value' => (string) $status,
+        ])->all();
     }
 }

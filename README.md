@@ -1,58 +1,165 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Checkpoint Store
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A demo e-commerce website for a gaming gear store. It combines a company profile, a product storefront with shopping cart and checkout, and a blog with admin-managed content.
 
-## About Laravel
+## Project Summary
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Checkpoint Store is a full-stack demo application built with **Laravel + Inertia + React**. It showcases three areas:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Company profile** — about page, FAQ, and general store information.
+- **E-commerce** — product catalog, product detail pages, shopping cart, and checkout that creates transaction records (with invoice numbers, stock management, and cancellation flow).
+- **Blog** — articles written and published by store admins, with featured images and tags.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The app distinguishes between regular users (`customer`) and store staff (`admin`). Admins access a dedicated dashboard to manage products and articles.
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Storefront product catalog with categories and image galleries
+- Product search and detail pages (slug-based URLs)
+- Blog with articles, tags, and featured images
+- User accounts: sign up, sign in, sign out, and profile management (phone & address)
+- Shopping cart: add, update quantity, remove items, and clear
+- Checkout that creates a transaction with a unique invoice number, decrements product stock, and clears the cart
+- Transaction listing and cancellation (cancellation restores stock)
+- Admin dashboard (at `/admin/dashboard`) for managing products (CRUD + display toggling) and articles (CRUD + publish/archive)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Tech Stack
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+| Layer | Technology |
+| --- | --- |
+| Backend | Laravel 13, PHP 8.3 |
+| Frontend | React 19 + TypeScript, Inertia v3 |
+| Styling | Tailwind CSS 4, shadcn/ui (Base UI) |
+| Tooling | Vite, TanStack Table, Tiptap, Leaflet |
+| Database | PostgreSQL |
+| Testing | Pest |
 
-## Agentic Development
+## Requirements
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- PHP 8.3+
+- Composer
+- Node.js (with npm)
+- PostgreSQL
+
+## Installation
+
+### Quick setup
+
+The project ships a one-command setup script:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer setup
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+This installs dependencies, creates `.env` from `.env.example` (if missing), generates an app key, runs migrations, installs npm packages, and builds the frontend assets.
 
-## Contributing
+After it finishes, still run `php artisan storage:link` (the store uploads product and article images into `storage/app/public`).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Manual setup
 
-## Code of Conduct
+```bash
+# 1. Install PHP dependencies
+composer install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 2. Create environment file and app key
+copy .env.example .env
+php artisan key:generate
 
-## Security Vulnerabilities
+# 3. Configure your database in .env
+#    DB_CONNECTION=pgsql
+#    DB_HOST=127.0.0.1
+#    DB_PORT=5432
+#    DB_DATABASE=project
+#    DB_USERNAME=<your user>
+#    DB_PASSWORD=<your password>
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 4. Run migrations and seed sample data
+php artisan migrate --seed
 
-## License
+# 5. Link the public storage directory for image uploads
+php artisan storage:link
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 6. Install and build frontend assets
+npm install
+npm run build
+```
+
+## Running the App
+
+Start everything (Laravel dev server, queue worker, and Vite) with a single command:
+
+```bash
+composer dev
+```
+
+Alternatively, run each process manually in separate terminals:
+
+```bash
+php artisan serve
+php artisan queue:listen --tries=1
+npm run dev
+```
+
+The app is then available at `http://localhost:8000`.
+
+## Database
+
+Migrations define the following domain tables:
+
+- `users`, `carts` / `cart_items`
+- `products`, `product_categories`, `product_images`
+- `articles`, `article_tags`, `article_tag_relations`
+- `transactions`, `transaction_items`
+
+Running `php artisan migrate --seed` populates the database with sample users (including an admin account), articles, and products so the site is usable immediately.
+
+## Project Structure
+
+```
+app/
+├── Http/
+│   ├── Controllers/          # public, user, and Admin/ controllers
+│   ├── Middleware/           # AuthCheck, AdminCheck, HandleInertiaRequests
+│   └── Requests/             # FormRequest validation classes
+├── Models/
+├── Policies/
+database/
+├── migrations/
+└── seeders/
+resources/
+└── js/
+    ├── pages/                # Inertia pages (Home, Store, Blog, Cart, Transaction, User, Admin, Auth)
+    ├── components/
+    ├── layouts/
+    └── types/                # shared TypeScript model types
+routes/
+├── web.php                   # public + authenticated-user routes
+├── admin.php                 # admin-only routes (AdminCheckMiddleware)
+├── auth.php                  # sign up / sign in / sign out
+└── console.php
+```
+
+## Routes Overview
+
+| Area | Routes |
+| --- | --- |
+| Public | `/`, `/about`, `/faq`, `/blog`, `/blog/{article}`, `/store`, `/store/{product}`, `/sign-up`, `/sign-in` |
+| Authenticated user | `/my-mine`, `PUT /user`, `/cart`, `/cart/items/{id}`, `/transactions` |
+| Admin | `/admin/dashboard`, `/admin/articles`, `/admin/products` |
+
+Admin routes require an account with the `admin` role (`AdminCheckMiddleware`).
+
+## Configuration
+
+All application settings live in `.env`. Notable values:
+
+- `DB_*` — PostgreSQL connection details
+- `APP_URL` — the base URL used for the site
+
+The `.env.example` file also reserves variables for the upcoming payment gateway integration:
+
+```dotenv
+MIDTRANS_SERVER_KEY=
+MIDTRANS_CLIENT_KEY=
+MIDTRANS_IS_PRODUCTION=false
+```

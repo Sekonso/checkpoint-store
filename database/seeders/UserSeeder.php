@@ -21,6 +21,8 @@ class UserSeeder extends Seeder
                 'name' => 'admin',
                 'email' => 'admin@checkpoint.store',
                 'password' => $password,
+                'phone' => 12345678,
+                'address' => "Sawangan, Depok",
                 'role' => 'admin',
             ],
             [

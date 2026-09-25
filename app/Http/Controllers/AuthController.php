@@ -2,29 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Throwable;
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Requests\SignUpRequest;
 use App\Http\Requests\SignInRequest;
+use App\Http\Requests\SignUpRequest;
+use App\Services\AuthService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
+use Throwable;
 
 class AuthController extends Controller
 {
+    public function __construct(private readonly AuthService $auth) {}
+
     public function signUp(SignUpRequest $request)
     {
         try {
-            $validated = $request->validated();
+            $user = $this->auth->register($request->validated());
 
-            $newUser = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => $validated['password'],
-            ]);
-
-            Auth::login($newUser);
+            Auth::login($user);
 
             $request->session()->regenerate();
 
@@ -32,7 +27,7 @@ class AuthController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            if (app()->environment(['local', 'development'])) {
+            if (app()->hasDebugModeEnabled()) {
                 throw $e;
             }
 
@@ -45,12 +40,7 @@ class AuthController extends Controller
         try {
             $validated = $request->validated();
 
-            $credentials = [
-                'name' => $validated['name'],
-                'password' => $validated['password'],
-            ];
-
-            if (!Auth::attempt($credentials)) {
+            if (! $this->auth->attemptLogin($validated)) {
                 return redirect()->back()->with('form_error', 'Invalid password or username');
             }
 
@@ -60,16 +50,17 @@ class AuthController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            if (app()->environment(['local', 'development'])) {
+            if (app()->hasDebugModeEnabled()) {
                 throw $e;
             }
 
             return back()->with('form_error', 'Server failed to submit your data');
         }
     }
+
     public function signOut(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        $this->auth->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

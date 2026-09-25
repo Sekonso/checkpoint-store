@@ -1,40 +1,50 @@
-## Scope and safety
+# Project
 
-- Treat the user's current request as the source of truth.
-- Before editing, inspect the relevant code, routes, migrations, tests, and project state. Do not guess about existing behavior.
-- Keep each change narrowly focused on the requested feature or fix. Avoid unrelated refactors, formatting churn, dependency upgrades, or speculative improvements.
-- Preserve existing user changes. Do not reset, discard, overwrite, or revert work that was not created for the current task.
-- Do not delete files, change data destructively, install packages, alter environment/configuration, commit, push, deploy, or contact external services unless the user explicitly requests it.
-- Ask before taking an action that could materially change the scope, data, API, architecture, or user-visible behavior.
+Checkpoint store is demo website a gaming gear store. The site contain profile information about the company, e-commerce for customer to buy our product and blog to share new related to our store's theme.
+
+ a Laravel 13 + Inertia/React storefront with an admin dashboard (storefront, blog, cart, Midtrans transactions, product/article management).
+
+## General rule
+
+- Language: English (US)
+- Never read any files from node modules and vendor. Refer to the official documentation first, then consult if documentation or any public information are not available. Only then you can read external libraries
+
+## Tech stack
+
+- Backend: Laravel 13, PHP 8.3
+- Frontend: React 19 + TypeScript, Inertia v3, Vite, Tailwind CSS 4, shadcn/ui (Base UI), TanStack Table, Tiptap, Leaflet
+- Tooling: Pest (tests), Laravel Pint, Prettier
+- Data: PostgreSQL
+
+## Coding conventions
+
+### Backend (PHP)
+
+- Routes split by purpose: `routes/web.php` (public + auth user), `routes/admin.php` (AdminCheckMiddleware), `routes/auth.php`.
+- Validation lives in FormRequest classes (`app/Http/Requests`); define per-attribute rule arrays.
+- Render methods return `Inertia::render(...)`. All non-render methods wrap logic in `try/catch (\Throwable)`: `report($e)`; rethrow in `local`/`development`; otherwise respond via flash toast or validation errors.
+- Multi-step writes use `DB::transaction`; clean up side effects (e.g. stored files) on failure.
+- Enforce ownership/role with `abort_unless(...)` / Policies; keep ownership checks in controllers.
+- Models: explicit `$table`, `$fillable`, `$casts`, typed relations with docblock return types; use attribute accessors/mutators for derived fields (e.g. slugs).
+
+### Frontend (TS/React)
+
+- Pages in `resources/js/pages/` are PascalCase (`Store/index.tsx`); components in `components/` are kebab-case (`search-bar.tsx`).
+- Shared model types in `resources/js/types/models.ts`; use `cn()` from `@/lib/utils` for class merging; Inertia page props are camelCase.
+- Reuse existing components (shadcn/ui, tiptap, sidebar, data-table) before introducing new abstractions.
+
+## Guard rails
+
+- Confirm before any consequential action: migrations / schema changes, deleting files or data, installing packages, editing `.env`/config, or anything affecting payments, data, architecture, or user-visible behavior.
+- Never read, log, or expose secrets from `.env` or other sensitive files.
+- Never run git operations.
+- Keep changes narrowly scoped to the request — no unrelated refactors, formatting churn, or dependency upgrades.
+- Never reset, discard, or overwrite user work. Inspect existing routes, controllers, migrations, and tests before editing; don't guess behavior.
 - Prefer reversible operations and small, reviewable patches.
 
 ## Working style
 
-- For implementation requests, briefly state the understanding, assumptions, and intended scope before making changes.
-- If a choice could substantially affect the result, ask a focused question. For routine details, make the smallest reasonable assumption and state it.
-- Do not stop at a plan when the user has authorized implementation; carry the task through to a reviewable result.
-- Do not use subagents unless delegation is explicitly requested or clearly justified by the user.
-- Explain what changed in plain language and identify any limitations or follow-up work.
-
-## Repository conventions
-
-- This is a Laravel application with an Inertia/React frontend. Follow the existing structure, naming, formatting, and patterns before introducing new ones.
-- Prefer framework conventions and existing components/services over adding abstractions.
-- Keep business rules in the appropriate backend layer and keep controllers and UI components focused.
-- Treat migrations and schema changes as consequential: describe their effect and ask for confirmation before creating them unless the user explicitly included them in the request.
-- Do not expose secrets from `.env` or other sensitive files.
-
-## Verification
-
-- Run checks appropriate to the change, such as targeted tests, `php artisan test`, route/config checks, or the frontend build.
-- Report exactly which checks were run and whether they passed.
-- If a check fails, show the relevant failure, investigate the cause, and do not claim completion until the issue is resolved or clearly reported as blocked.
-- Do not add tests that merely mirror trivial implementation. Add meaningful tests for business rules, authorization, validation, persistence, and regressions.
-
-## Review and Git
-
-- Before finishing, inspect the diff and summarize every changed or added file.
-- Never create a commit unless explicitly asked.
-- If the working tree contains unrelated changes, leave them untouched and call them out when relevant.
-- A task is complete only when the requested behavior is implemented, relevant verification is done, and remaining risks are communicated.
-
+- Restate understanding and scope briefly before implementing; ask one focused question when a choice matters, else assume the smallest reasonable option.
+- Follow existing patterns over new abstractions.
+- Do not use subagents unless asked.
+- Explain changes in plain language and note limitations or follow-up work.
