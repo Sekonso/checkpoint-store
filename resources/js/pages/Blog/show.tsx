@@ -25,7 +25,7 @@ export default function BlogDetailPage() {
             <Head title={article.title} />
 
             <MainLayout>
-                <div className="wrapper flex w-250 flex-col gap-8 py-6 sm:py-12">
+                <div className="wrapper flex w-full max-w-3xl flex-col gap-8 py-6 sm:py-12">
                     <Breadcrumbs items={breadcrumb} />
 
                     <img
@@ -33,7 +33,7 @@ export default function BlogDetailPage() {
                         className="h-70 w-full object-cover"
                     />
 
-                    <div className="mx-auto flex w-250 flex-col gap-8">
+                    <div className="flex w-full min-w-0 max-w-240 mx-auto flex-col gap-8">
                         {/* Head */}
                         <div className="flex flex-col gap-2">
                             <h1 className="text-2xl font-bold capitalize sm:text-3xl">
@@ -60,6 +60,7 @@ export default function BlogDetailPage() {
 
                         {/* Content */}
                         <div
+                            className="tiptap-content min-w-0"
                             dangerouslySetInnerHTML={{
                                 __html: article.content,
                             }}

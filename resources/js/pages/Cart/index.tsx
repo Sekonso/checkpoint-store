@@ -3,17 +3,25 @@ import { Cart } from "@/types/models";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Head, Link as InertiaLink, useForm, usePage } from "@inertiajs/react";
+import {
+    Head,
+    Link as InertiaLink,
+    Form as InertiaForm,
+    useForm,
+    usePage,
+} from "@inertiajs/react";
 import { ShoppingBag, Trash2 } from "lucide-react";
 import { PageProps } from "@inertiajs/core";
 import CartItemRow from "@/components/cart-item-row";
+import { FormError } from "@/components/form/form-error";
+import { FlashProps } from "@/types/inertia-props";
 
-interface CartPageProps extends PageProps {
+interface CartPageProps extends PageProps, FlashProps {
     cart: Cart;
 }
 
 export default function CartPage() {
-    const { cart } = usePage<CartPageProps>().props;
+    const { cart, flash } = usePage<CartPageProps>().props;
     const { delete: clearCart, processing } = useForm();
 
     const totalQuantity = cart.items.reduce(
@@ -110,11 +118,31 @@ export default function CartPage() {
                                         </span>
                                     </CardContent>
                                 </Card>
-                                <InertiaLink href="#">
-                                    <Button className="font-heading mt-4 w-full py-2 font-semibold">
-                                        Checkout
-                                    </Button>
-                                </InertiaLink>
+                                <InertiaForm
+                                    action="/transactions"
+                                    method="post"
+                                >
+                                    {({ processing: isCheckingOut }) => (
+                                        <>
+                                            <Button
+                                                type="submit"
+                                                className="font-heading mt-4 w-full py-2 font-semibold"
+                                                disabled={isCheckingOut}
+                                            >
+                                                {isCheckingOut
+                                                    ? "Processing..."
+                                                    : "Checkout"}
+                                            </Button>
+
+                                            {flash?.formError && (
+                                                <FormError
+                                                    title="Checkout failed"
+                                                    message={flash.formError}
+                                                />
+                                            )}
+                                        </>
+                                    )}
+                                </InertiaForm>
                             </div>
                         </div>
                     )}

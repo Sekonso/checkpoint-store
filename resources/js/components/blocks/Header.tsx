@@ -34,7 +34,7 @@ const headerLinks = [
 const userLinks = [
     { name: "Profile", href: "/my-mine" },
     { name: "My Cart", href: "/cart" },
-    { name: "Purchase History", href: "/purchases" },
+    { name: "Purchase History", href: "/transactions" },
 ];
 
 export default function Header() {

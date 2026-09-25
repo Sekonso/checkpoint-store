@@ -3,9 +3,8 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
-use Inertia\Middleware;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -41,19 +40,19 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
 
             'flash' => [
-                'toast' => fn() => $request->session()->get('toast'),
-                'formError' => fn() => $request->session()->get('form_error')
+                'toast' => fn () => $request->session()->get('toast'),
+                'formError' => fn () => $request->session()->get('form_error'),
+                'openPayment' => fn () => $request->session()->get('open_payment', false),
             ],
 
-            'auth' => fn() => [
+            'auth' => fn () => [
                 'user' => Auth::user(),
             ],
 
-            'cart' => fn() =>
-                Auth::user()
-                        ?->cart()
-                    ->with('items.product')
-                    ->first(),
+            'cart' => fn () => Auth::user()
+                ?->cart()
+                ->with('items.product')
+                ->first(),
         ];
     }
 }

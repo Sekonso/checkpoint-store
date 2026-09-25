@@ -3,49 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\ProductCategory;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class StoreController extends Controller
 {
+    public function __construct(private readonly ProductService $product) {}
+
     public function index(Request $request)
     {
         $query_search = $request->query('search');
         $query_category = $request->query('category');
 
-        $products = Product::query()
-            ->with(['images', 'category'])
-            ->where('in_display', true)
-            ->where('stock', '>', 0)
-            ->when(
-                $query_search,
-                fn($query, $query_search) =>
-                $query->where('name', 'like', "%{$query_search}%")
-            )
-            ->when(
-                $query_category,
-                fn($query, $query_category) =>
-                $query->where('category_id', $query_category)
-            )
-            ->latest()
-            ->paginate(12)
-            ->withQueryString();
-
-        $categories = ProductCategory::query()->orderBy('name')->get();
-
         return Inertia::render('Store/index', [
             'querySearch' => $query_search,
             'queryCategory' => $query_category,
-            'products' => $products,
-            'categories' => $categories
+            'products' => $this->product->paginateForStore($query_search, $query_category),
+            'categories' => $this->product->categories(),
         ]);
     }
 
     public function show(Product $product)
     {
-        abort_unless($product->in_display, 404);
-        $product->load(['images', 'category']);
+        $product = $this->product->getDisplayableProduct($product);
+
+        abort_unless($product, 404);
 
         return Inertia::render('Store/show', ['product' => $product]);
     }

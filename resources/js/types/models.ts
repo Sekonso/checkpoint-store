@@ -62,3 +62,51 @@ export interface CartItem {
     quantity: number;
     product: Product;
 }
+
+export interface Transaction {
+    id: number;
+    user_id: number;
+    invoice_number: string;
+    name: string;
+    phone: string;
+    address: string;
+    total_amount: number;
+    status: "pending" | "paid" | "cancelled";
+    payment_type: string | null;
+    paid_at: string | null;
+    expires_at: string | null;
+    is_complete: boolean;
+    created_at: string;
+    updated_at: string;
+    items: TransactionItem[];
+    user?: User;
+}
+
+export interface Payment {
+    id: number;
+    transaction_id: number;
+    status: "active" | "paid" | "expired" | "cancelled";
+    method: string | null;
+    amount: number;
+    paid_at: string | null;
+    expires_at: string | null;
+}
+
+export interface CompletedPayment {
+    method: string | null;
+    amount: number;
+    paid_at: string | null;
+    status: string;
+}
+
+export interface TransactionItem {
+    id: number;
+    transaction_id: number;
+    product_id: number | null;
+    product_name: string;
+    price: number;
+    quantity: number;
+    subtotal: number;
+    created_at: string;
+    updated_at: string;
+}

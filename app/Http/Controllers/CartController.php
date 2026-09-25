@@ -3,18 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\CartItem;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class CartController extends Controller
 {
+    public function __construct(private readonly CartService $cart) {}
+
     public function index()
     {
-        $cart = Auth::user()->cart()->firstOrCreate([]);
+        $cart = $this->cart->getOrCreateCart(Auth::user());
         $cart->load([
-            'items' => fn($query) => $query->latest('created_at'),
+            'items' => fn ($query) => $query->latest('created_at'),
             'items.product.images',
             'items.product.category',
         ]);
@@ -27,24 +29,17 @@ class CartController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validation
             $validated = $request->validate([
-                'product_id' => 'required|exists:products,id'
+                'product_id' => 'required|exists:products,id',
             ]);
 
-            // Add product to cart
-            $cart = Auth::user()->cart()->firstOrCreate([]);
-            $cart->items()->firstOrCreate(
-                ['product_id' => $validated['product_id']],
-                ['quantity' => 1],
-            );
+            $this->cart->addItem(Auth::user(), (int) $validated['product_id']);
 
-            // Success
             return back();
         } catch (\Throwable $e) {
             report($e);
 
-            if (app()->environment(['local', 'development'])) {
+            if (app()->hasDebugModeEnabled()) {
                 throw $e;
             }
 
@@ -62,13 +57,7 @@ class CartController extends Controller
             'quantity' => ['required', 'integer', 'min:1'],
         ]);
 
-        if ($validated['quantity'] > $cartItem->product->stock) {
-            throw ValidationException::withMessages([
-                'quantity' => 'The requested quantity exceeds available stock.',
-            ]);
-        }
-
-        $cartItem->update(['quantity' => $validated['quantity']]);
+        $this->cart->updateQuantity($cartItem, (int) $validated['quantity']);
 
         return back()->with('toast', [
             'type' => 'success',
@@ -79,7 +68,7 @@ class CartController extends Controller
     public function destroyItem(CartItem $cartItem)
     {
         $this->ensureOwnership($cartItem);
-        $cartItem->delete();
+        $this->cart->removeItem($cartItem);
 
         return back()->with('toast', [
             'type' => 'success',
@@ -89,7 +78,7 @@ class CartController extends Controller
 
     public function clear()
     {
-        Auth::user()->cart()->firstOrCreate([])->items()->delete();
+        $this->cart->clearCart(Auth::user());
 
         return back()->with('toast', [
             'type' => 'success',

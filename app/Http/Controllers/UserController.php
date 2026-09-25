@@ -32,7 +32,7 @@ class UserController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            if (app()->environment(['local', 'development'])) {
+            if (app()->hasDebugModeEnabled() ) {
                 throw $e;
             }
 
