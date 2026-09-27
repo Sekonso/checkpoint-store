@@ -4,6 +4,7 @@ import { CompletedPayment, Transaction } from "@/types/models";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ShippingStatusTracker } from "@/components/shipping-status-tracker";
 import {
     Dialog,
     DialogContent,
@@ -323,6 +324,22 @@ export default function TransactionInvoice({
                                         {completedPayment.status}
                                     </span>
                                 </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Shipping tracking, only once the payment settled */}
+                    {isPaid && (
+                        <Card className="mb-6">
+                            <CardHeader className="border-b pb-4">
+                                <CardTitle className="text-lg">
+                                    Shipping Status
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-6">
+                                <ShippingStatusTracker
+                                    status={transaction.shipping_status}
+                                />
                             </CardContent>
                         </Card>
                     )}

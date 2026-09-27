@@ -9,52 +9,49 @@ import { Head } from "@inertiajs/react";
 
 const items = [
     {
-        value: "item-1",
-        trigger: "What payment methods do you accept?",
+        trigger: "How can I contact Checkpoint Store?",
         content:
-            "We accept major payment methods available through our checkout. Available options may vary depending on your location and the payment provider.",
+            "You can contact Checkpoint Store through the contact information in the footer below. For order-related questions, include your order number so we can assist you more efficiently.",
     },
     {
-        value: "item-2",
-        trigger: "How long does shipping take?",
+        trigger: "Are Checkpoint Store products covered by warranty?",
         content:
-            "Shipping times depend on your location and the delivery service selected during checkout. Estimated delivery information will be provided when you place your order.",
+            "Warranty coverage depends on the product and manufacturer. Please check the product information or contact us if you need help determining the warranty coverage for a specific item.",
     },
     {
-        value: "item-3",
-        trigger: "Can I track my order?",
+        trigger: "How do i purchase the products in Checkpoint Store?",
         content:
-            "Yes. Once your order has been shipped, you will receive tracking information when it is available. You can use the tracking number to follow your package's delivery status.",
+            "Sign your account then go the store page. Select your desired product and add it to the cart. Then visit the cart, do checkout, and confirm your payments. We will contact you upon successful purchase",
     },
     {
-        value: "item-4",
-        trigger: "Can I cancel my order?",
+        trigger: "How do the payment works after i checkout?",
         content:
-            "Orders can only be cancelled before they have been processed for shipment. If you need to cancel an order, contact us as soon as possible with your order details.",
+            "After checkout, you will be redirected to the invoice page or you can visit the page yourself through purchase history. There you can start initiate your payments, then payment button will show up. After clicking the button, you can choose the payment method then proceed to pay. After payment, make sure to refresh your status to see if your payment is succesfull or not",
     },
     {
-        value: "item-5",
-        trigger: "Can I return or exchange an item?",
+        trigger: "How can i change my payment method?",
         content:
-            "Eligible products can be returned or exchanged according to our return policy. Items generally need to be unused and in their original condition and packaging. Contact us before sending an item back.",
+            "If you are already choosing a certain payment method and would like to change it. You can click the 'reset' button to reset your payment attempt. There you can choose your payment method again.",
     },
     {
-        value: "item-6",
+        trigger: "Why is my ongoing/pending transactions gone?",
+        content:
+            "If you can't see you purchase history, that means your transaction are considered cancelled due to expiration date",
+    },
+    {
+        trigger: "How can i track my order?",
+        content:
+            "After successful purchase. You can track your shipping status of your order in purchasing history. Will will also notify your order tracking through your email or phone, make sure to include valid contact information in your profile.",
+    },
+    {
         trigger: "What if my order arrives damaged?",
         content:
             "If your order arrives damaged, contact us as soon as possible and provide your order number along with clear photos of the damaged packaging and product. We will review the issue and help determine the appropriate solution.",
     },
     {
-        value: "item-7",
-        trigger: "Are your gaming products covered by warranty?",
+        trigger: "Can I cancel my order?",
         content:
-            "Warranty coverage depends on the product and manufacturer. Please check the product information or contact us if you need help determining the warranty coverage for a specific item.",
-    },
-    {
-        value: "item-8",
-        trigger: "How can I contact Checkpoint Store?",
-        content:
-            "You can contact Checkpoint Store through the contact information provided on our website. For order-related questions, include your order number so we can assist you more efficiently.",
+            "If you haven't paid your order, you can cancel your order by visiting purchasing history. If your order is already paid, you can contact us for cancellation.",
     },
 ];
 
@@ -69,12 +66,9 @@ export default function FAQ() {
                         FAQ
                     </h1>
                     <div className="mx-auto max-w-150">
-                        <Accordion defaultValue={["item-1"]}>
-                            {items.map((item) => (
-                                <AccordionItem
-                                    key={item.value}
-                                    value={item.value}
-                                >
+                        <Accordion defaultValue={["item-0"]}>
+                            {items.map((item, idx) => (
+                                <AccordionItem key={idx} value={`item-${idx}`}>
                                     <AccordionTrigger className="font-semibold hover:no-underline sm:text-lg">
                                         {item.trigger}
                                     </AccordionTrigger>

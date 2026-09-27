@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use App\Http\Middleware\AdminCheckMiddleware;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\TransactionController;
 
 Route::middleware([AdminCheckMiddleware::class])->group(function () {
     Route::get('/admin/dashboard', function () {
@@ -33,4 +34,12 @@ Route::middleware([AdminCheckMiddleware::class])->group(function () {
     Route::put('/admin/products/{product}', [ProductController::class, 'update']);
 
     Route::delete('/admin/products/{product}', [ProductController::class, 'destroy']);
+
+    // Transactions
+    Route::get('/admin/transactions', [TransactionController::class, 'index']);
+    Route::get('/admin/transactions/{transaction}/edit', [TransactionController::class, 'edit']);
+
+    Route::patch('/admin/transactions/{transaction}/shipping', [TransactionController::class, 'updateShipping']);
+
+    Route::delete('/admin/transactions/{transaction}', [TransactionController::class, 'destroy']);
 });

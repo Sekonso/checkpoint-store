@@ -6,13 +6,18 @@ use App\Exceptions\CheckoutException;
 use App\Models\Payment;
 use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 final class TransactionService
 {
-    public function __construct(private readonly PaymentService $payment) {}
+    public function __construct(private readonly PaymentService $payment)
+    {
+    }
 
     public function listForUser(User $user): Collection
     {
@@ -26,6 +31,71 @@ final class TransactionService
             });
     }
 
+    public function paginateForAdmin(?string $search, ?string $status): LengthAwarePaginator
+    {
+        return Transaction::query()
+            ->when(
+                $search !== null && $search !== '',
+                fn(Builder $query) => $query->whereLike('invoice_number', "%{$search}%", caseSensitive: false)
+            )
+            ->when(
+                in_array($status, [Transaction::STATUS_PENDING, Transaction::STATUS_PAID, Transaction::STATUS_CANCELLED], true),
+                fn(Builder $query) => $query->where('status', $status)
+            )
+            ->latest('created_at')
+            ->paginate(15)
+            ->withQueryString();
+    }
+
+    /**
+     * Delete a transaction that is already cancelled, so its reserved stock
+     * has been released. Any leftover payment session is cancelled at the
+     * gateway first, otherwise the customer could still be charged against a
+     * row that no longer exists.
+     */
+    public function deleteForAdmin(Transaction $transaction): void
+    {
+        if ($transaction->status !== Transaction::STATUS_CANCELLED) {
+            throw ValidationException::withMessages([
+                'delete' => 'Only cancelled transactions can be deleted.',
+            ]);
+        }
+
+        $active = $transaction->activePayment;
+
+        if ($active) {
+            try {
+                $this->payment->cancelGatewaySession($active);
+            } catch (Throwable $e) {
+                report($e);
+            }
+        }
+
+        DB::transaction(fn() => $transaction->delete());
+    }
+
+    /**
+     * Move a paid transaction through its shipping lifecycle. Shipping only
+     * exists once the payment is settled, so a pending or cancelled
+     * transaction can never be marked as shipped.
+     */
+    public function updateShipping(Transaction $transaction, string $shippingStatus): void
+    {
+        DB::transaction(function () use ($transaction, $shippingStatus) {
+            $locked = $transaction->lockForUpdate();
+
+            if ($locked->status !== Transaction::STATUS_PAID) {
+                throw ValidationException::withMessages([
+                    'shipping_status' => 'Shipping status can only be changed on a paid transaction.',
+                ]);
+            }
+
+            $locked->update([
+                'shipping_status' => $shippingStatus,
+            ]);
+        });
+    }
+
     public function checkout(User $user): Transaction
     {
         if (blank($user->phone) || blank($user->address)) {
@@ -34,7 +104,7 @@ final class TransactionService
 
         $cart = $user->cart()->with('items.product')->first();
 
-        if (! $cart || $cart->items->isEmpty()) {
+        if (!$cart || $cart->items->isEmpty()) {
             throw new CheckoutException('Your cart is empty.');
         }
 
@@ -119,7 +189,7 @@ final class TransactionService
         DB::transaction(function () use ($transaction) {
             $locked = Transaction::lockForUpdate()->findOrFail($transaction->id);
 
-            if (! $locked->isMutable()) {
+            if (!$locked->isMutable()) {
                 return;
             }
 
@@ -160,13 +230,13 @@ final class TransactionService
 
     public function paymentDetails(Transaction $transaction): ?array
     {
-        if (! $this->payment->isConfigured()) {
+        if (!$this->payment->isConfigured()) {
             return null;
         }
 
         $active = $transaction->activePayment;
 
-        if (! $active) {
+        if (!$active) {
             return null;
         }
 
@@ -181,7 +251,7 @@ final class TransactionService
     {
         $paid = $transaction->paidPayment;
 
-        if (! $paid) {
+        if (!$paid) {
             return null;
         }
 
