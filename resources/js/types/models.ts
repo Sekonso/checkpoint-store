@@ -17,6 +17,7 @@ export interface Article {
     tags: ArticleTag[];
     status: "draft" | "published" | "archived";
     published_at: string | null;
+    created_at: string;
 }
 
 export interface ArticleTag {

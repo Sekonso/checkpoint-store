@@ -6,6 +6,7 @@ use App\Models\Article;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
@@ -40,6 +41,15 @@ final class ArticleService
             ->latest('created_at')
             ->paginate(10)
             ->withQueryString();
+    }
+
+    public function latestPublished(int $limit = 3): Collection
+    {
+        return Article::query()
+            ->where('status', 'published')
+            ->latest('created_at')
+            ->limit($limit)
+            ->get();
     }
 
     public function findWithTags(Article $article): Article

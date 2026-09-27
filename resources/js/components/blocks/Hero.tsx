@@ -20,7 +20,13 @@ export default function Hero() {
                 <p className="font-heading text-lg uppercase md:text-xl lg:text-2xl">
                     Continue?
                 </p>
-                <ChevronDown className="float mt-6" size={48} />
+                <a
+                    href="#store-intro"
+                    aria-label="Scroll to store introduction"
+                    className="mt-6 rounded-full focus-visible:ring-3 focus-visible:ring-white/70 focus-visible:outline-none"
+                >
+                    <ChevronDown className="float" size={48} />
+                </a>
             </div>
         </section>
     );

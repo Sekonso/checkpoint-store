@@ -33,6 +33,17 @@ final class ProductService
             ->withQueryString();
     }
 
+    public function latestInDisplay(int $limit = 3): Collection
+    {
+        return Product::query()
+            ->with(['images', 'category'])
+            ->where('in_display', true)
+            ->where('stock', '>', 0)
+            ->latest()
+            ->limit($limit)
+            ->get();
+    }
+
     public function getDisplayableProduct(Product $product): ?Product
     {
         if (! $product->in_display) {
