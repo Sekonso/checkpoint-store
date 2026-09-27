@@ -17,7 +17,7 @@ class HomeController extends Controller
     {
         return Inertia::render('Home', [
             'latestProducts' => $this->product->latestInDisplay(3),
-            'latestArticles' => $this->article->latestPublished(3),
+            'latestArticles' => $this->article->latestPublished(4),
         ]);
     }
 }

@@ -14,7 +14,7 @@ beforeEach(function () {
     ArticleTag::factory()->count(3)->create();
 });
 
-it('caps the homepage products and articles at three each', function () {
+it('caps the homepage products at three and the articles at four', function () {
     Product::factory()->withCategory()->display()->count(5)->create();
     Article::factory()->withTags()->count(5)->create(['status' => 'published']);
 
@@ -23,7 +23,7 @@ it('caps the homepage products and articles at three each', function () {
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Home')
             ->has('latestProducts', 3)
-            ->has('latestArticles', 3)
+            ->has('latestArticles', 4)
         );
 });
 

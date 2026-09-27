@@ -8,10 +8,9 @@ const footerNavigations = {
         { name: "About", href: "/about" },
         { name: "FAQ", href: "/faq" },
     ],
-    products: [
-        { name: "All Products", href: "/products" },
-        { name: "Featured", href: "/products/featured" },
-        { name: "New Arrivals", href: "/products/new" },
+    featured: [
+        { name: "Our Products", href: "/products" },
+        { name: "News and Blog", href: "/products/featured" },
     ],
     contacts: [
         { name: "Whatsapp", href: "https://api.whatsapp.com/send?phone=6282123615939" },
@@ -90,6 +89,7 @@ export default function Footer() {
                     </div>
                     <img
                         src="/images/controller.png"
+                        loading="lazy"
                         className="table-desktop-only max-h-25 object-cover"
                     ></img>
                 </div>
