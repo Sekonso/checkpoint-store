@@ -1,5 +1,24 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { ShippingStatus } from "@/types/models";
+
+/**
+ * The shipping lifecycle, in fulfilment order. Mirrors
+ * Transaction::SHIPPING_STATUSES on the backend.
+ */
+export const SHIPPING_STATUS_ORDER: ShippingStatus[] = [
+    "idle",
+    "packaging",
+    "in_transit",
+    "delivered",
+];
+
+export const SHIPPING_STATUS_LABELS: Record<ShippingStatus, string> = {
+    idle: "Idle",
+    packaging: "Packaging",
+    in_transit: "In transit",
+    delivered: "Delivered",
+};
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

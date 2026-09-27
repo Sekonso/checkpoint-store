@@ -19,6 +19,26 @@ class Transaction extends Model
 
     public const STATUS_CANCELLED = 'cancelled';
 
+    public const SHIPPING_IDLE = 'idle';
+
+    public const SHIPPING_PACKAGING = 'packaging';
+
+    public const SHIPPING_IN_TRANSIT = 'in_transit';
+
+    public const SHIPPING_DELIVERED = 'delivered';
+
+    /**
+     * Every allowed shipping status, in fulfilment order.
+     *
+     * @var list<string>
+     */
+    public const SHIPPING_STATUSES = [
+        self::SHIPPING_IDLE,
+        self::SHIPPING_PACKAGING,
+        self::SHIPPING_IN_TRANSIT,
+        self::SHIPPING_DELIVERED,
+    ];
+
     protected $fillable = [
         'user_id',
         'invoice_number',
@@ -31,6 +51,7 @@ class Transaction extends Model
         'paid_at',
         'expires_at',
         'is_complete',
+        'shipping_status',
     ];
 
     protected function casts(): array

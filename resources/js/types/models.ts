@@ -17,6 +17,7 @@ export interface Article {
     tags: ArticleTag[];
     status: "draft" | "published" | "archived";
     published_at: string | null;
+    created_at: string;
 }
 
 export interface ArticleTag {
@@ -63,6 +64,12 @@ export interface CartItem {
     product: Product;
 }
 
+export type ShippingStatus =
+    | "idle"
+    | "packaging"
+    | "in_transit"
+    | "delivered";
+
 export interface Transaction {
     id: number;
     user_id: number;
@@ -72,6 +79,7 @@ export interface Transaction {
     address: string;
     total_amount: number;
     status: "pending" | "paid" | "cancelled";
+    shipping_status: ShippingStatus;
     payment_type: string | null;
     paid_at: string | null;
     expires_at: string | null;

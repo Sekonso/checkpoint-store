@@ -16,6 +16,7 @@ import {
     GamepadDirectional,
     Plus,
     Newspaper,
+    ReceiptText,
 } from "lucide-react";
 import { usePage } from "@inertiajs/react";
 import { AuthProps } from "@/types/inertia-props";
@@ -60,6 +61,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     name: "Create Products",
                     url: "/admin/products/create",
                     icon: <Plus />,
+                },
+            ],
+            Transactions: [
+                {
+                    name: "All Transactions",
+                    url: "/admin/transactions",
+                    icon: <ReceiptText />,
                 },
             ],
         },

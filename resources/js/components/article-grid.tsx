@@ -7,19 +7,28 @@ import {
 } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 import { Link as InertiaLink } from "@inertiajs/react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, cn } from "@/lib/utils";
 
 interface ArticleGridProps {
     articles: Article[];
+    columns?: 2 | 3;
 }
 
-export default function ArticleGrid({ articles }: ArticleGridProps) {
+export default function ArticleGrid({
+    articles,
+    columns = 2,
+}: ArticleGridProps) {
     return (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div
+            className={cn(
+                "grid grid-cols-1 gap-6 sm:grid-cols-2",
+                columns === 3 && "lg:grid-cols-3",
+            )}
+        >
             {articles.map((item) => (
                 <InertiaLink
                     key={item.id}
-                    href={`blog/${item.slug}`}
+                    href={`/blog/${item.slug}`}
                     className="group shadow-sm hover:-translate-y-1 hover:shadow-lg"
                 >
                     <Card className="p-0">

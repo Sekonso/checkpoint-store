@@ -13,12 +13,13 @@ const footerNavigations = {
         { name: "Featured", href: "/products/featured" },
         { name: "New Arrivals", href: "/products/new" },
     ],
-    blog: [
-        { name: "Latest Posts", href: "/blog" },
-        { name: "News", href: "/blog/news" },
-        { name: "Guides", href: "/blog/guides" },
+    contacts: [
+        { name: "Whatsapp", href: "https://api.whatsapp.com/send?phone=6282123615939" },
+        { name: "Email", href: "mailto:ancaadri9@gmail.com" },
+        { name: "Github", href: "https://github.com/Sekonso" },
     ],
 };
+
 export default function Footer() {
     return (
         <footer>

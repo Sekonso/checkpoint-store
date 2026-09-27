@@ -149,6 +149,12 @@
         @apply font-sans;
     }
 
+    @media (prefers-reduced-motion: no-preference) {
+        html {
+            scroll-behavior: smooth;
+        }
+    }
+
     .leaflet-container {
         @apply !bg-card !font-[inherit];
     }
