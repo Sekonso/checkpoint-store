@@ -27,13 +27,11 @@ export default function LatestArticles({ articles }: LatestArticlesProps) {
                     </p>
                 </div>
 
-                <Button
-                    size="lg"
-                    render={<InertiaLink href="/blog" />}
-                    className="px-6 py-4"
-                >
-                    See More Articles
-                </Button>
+                <InertiaLink href="/blog">
+                    <Button size="lg" className="px-6 py-4">
+                        See More Articles
+                    </Button>
+                </InertiaLink>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[5.5fr_2.5fr]">

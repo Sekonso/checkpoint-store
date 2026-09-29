@@ -16,17 +16,16 @@ export default function StoreIntro() {
                 {/* Content */}
                 <div className="order-1 flex flex-col gap-4 md:order-2">
                     <p className="text-primary text-sm font-medium tracking-wider uppercase">
-                        Who we are
+                        What is Checkpoint Store?
                     </p>
                     <h2 className="font-heading text-2xl font-bold tracking-wide uppercase sm:text-3xl">
-                        Everything you need for your setup
+                        Provider For High Quality Gaming Gear
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
                         Checkpoint Store is a gaming gear store for players who
-                        care about how their setup feels. Browse peripherals and
-                        accessories, check out in a few clicks, and follow your
-                        order from payment to delivery. Our blog covers the gear
-                        we sell, so you can buy with a bit more confidence.
+                        care about how their setup feels. We provide high
+                        quality gears to enchance your gaming experience to the
+                        next level.
                     </p>
                 </div>
             </div>

@@ -1,8 +1,8 @@
 import { AuthProps, CartProps } from "@/types/inertia-props";
 import { usePage } from "@inertiajs/react";
 import { Link as InertiaLink, useForm } from "@inertiajs/react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AddToCartButton({
@@ -51,21 +51,19 @@ export default function AddToCartButton({
     return auth.user ? (
         // Authenticated user
         isProductInCart(product_id) ? (
-            <Button disabled>
-                Telah ditambahkan
-            </Button>
+            <Button disabled>Added to cart</Button>
         ) : (
             <Button onClick={addCartHandler}>
-                <Plus />
-                Tambah ke Keranjang
+                <ShoppingCart />
+                Add To Cart
             </Button>
         )
     ) : (
         // Guest user
         <InertiaLink href="/sign-in">
             <Button className="w-full">
-                <Plus />
-                Tambah ke Keranjang
+                <ShoppingCart />
+                Add To Cart
             </Button>
         </InertiaLink>
     );

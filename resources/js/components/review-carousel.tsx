@@ -62,15 +62,15 @@ export default function ReviewCarousel() {
                 />
                 <div className="min-w-0 text-center">
                     <p className="text-primary mb-2 text-sm font-medium tracking-wider uppercase">
-                        Testimonials
+                        Your ol'reliable store
                     </p>
 
-                    <h2 className="text-3xl font-bold md:text-4xl">
-                        What our customers say
+                    <h2 className="font-heading text-3xl font-bold md:text-4xl">
+                        Hear From Our Customers
                     </h2>
 
                     <p className="text-muted-foreground mx-auto mt-3 max-w-xl">
-                        See what our customers have to say about their
+                        See what they say about their
                         experience.
                     </p>
                 </div>

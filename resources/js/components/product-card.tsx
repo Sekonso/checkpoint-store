@@ -32,9 +32,9 @@ export default function ProductCard({ product }: { product: Product }) {
                     )}
                 </div>
                 {product.category && (
-                    <Badge className="absolute top-3 right-3">
+                    <div className="absolute top-0 right-0 bg-primary rounded-bl-xl py-1 px-4">
                         {product.category.name}
-                    </Badge>
+                    </div>
                 )}
             </CardHeader>
 

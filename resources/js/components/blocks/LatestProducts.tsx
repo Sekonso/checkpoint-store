@@ -16,7 +16,7 @@ export default function LatestProducts({ products }: LatestProductsProps) {
         <section id="latest-products" className="wrapper scroll-mt-24 py-16">
             <div className="mb-10 flex flex-col items-center gap-3 text-center">
                 <p className="text-primary text-sm font-medium tracking-wider uppercase">
-                    Fresh Drop
+                    Take a look at
                 </p>
                 <h2 className="font-heading text-3xl font-bold md:text-4xl">
                     Our Latest Products
