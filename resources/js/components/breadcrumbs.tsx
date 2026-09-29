@@ -32,8 +32,9 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
                                 <BreadcrumbLink href={item.href}>
                                     {item.name}
                                 </BreadcrumbLink>
-                                <BreadcrumbSeparator />
                             </BreadcrumbItem>
+
+                            <BreadcrumbSeparator />
                         </React.Fragment>
                     );
                 })}

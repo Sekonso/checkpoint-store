@@ -30,11 +30,6 @@ export default function HomeProductCard({ product }: { product: Product }) {
                         </div>
                     )}
                 </div>
-                {product.category && (
-                    <Badge className="absolute top-3 right-3">
-                        {product.category.name}
-                    </Badge>
-                )}
             </CardHeader>
 
             <CardContent className="flex flex-1 flex-col px-4">

@@ -50,18 +50,30 @@ export default function ReviewCarousel() {
 
     return (
         <section className="wrapper py-16">
-            <div className="mb-10 text-center">
-                <p className="text-primary mb-2 text-sm font-medium tracking-wider uppercase">
-                    Testimonials
-                </p>
+            <div className="mb-10 flex items-center justify-center gap-4 sm:gap-6 md:gap-8">
+                <img
+                    src="/images/nice.webp"
+                    alt=""
+                    aria-hidden="true"
+                    width={512}
+                    height={512}
+                    loading="lazy"
+                    className="desktop-only size-20 shrink-0 object-contain sm:size-24 md:size-32"
+                />
+                <div className="min-w-0 text-center">
+                    <p className="text-primary mb-2 text-sm font-medium tracking-wider uppercase">
+                        Your ol'reliable store
+                    </p>
 
-                <h2 className="text-3xl font-bold md:text-4xl">
-                    What our customers say
-                </h2>
+                    <h2 className="font-heading text-3xl font-bold md:text-4xl">
+                        Hear From Our Customers
+                    </h2>
 
-                <p className="text-muted-foreground mx-auto mt-3 max-w-xl">
-                    See what our customers have to say about their experience.
-                </p>
+                    <p className="text-muted-foreground mx-auto mt-3 max-w-xl">
+                        See what they say about their
+                        experience.
+                    </p>
+                </div>
             </div>
 
             <Carousel
