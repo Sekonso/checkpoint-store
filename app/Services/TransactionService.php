@@ -82,7 +82,7 @@ final class TransactionService
     public function updateShipping(Transaction $transaction, string $shippingStatus): void
     {
         DB::transaction(function () use ($transaction, $shippingStatus) {
-            $locked = $transaction->lockForUpdate();
+            $locked = Transaction::lockForUpdate()->findOrFail($transaction->id);
 
             if ($locked->status !== Transaction::STATUS_PAID) {
                 throw ValidationException::withMessages([
