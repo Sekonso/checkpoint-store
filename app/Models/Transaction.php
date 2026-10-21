@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 
 class Transaction extends Model
 {
-    // use HasFactory;
+    use HasFactory;
 
     public const STATUS_PENDING = 'pending';
 
