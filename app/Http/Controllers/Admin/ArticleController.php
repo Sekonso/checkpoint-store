@@ -22,6 +22,9 @@ class ArticleController extends Controller
         $query_search = $request->query('search');
         $query_status = $request->query('status');
 
+        $query_search = \is_string($query_search) ? $query_search : null;
+        $query_status = \is_string($query_status) ? $query_status : null;
+
         return Inertia::render('Admin/Articles/index', [
             'querySearch' => $query_search,
             'queryStatus' => $query_status,

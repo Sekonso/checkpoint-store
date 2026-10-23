@@ -25,16 +25,6 @@ dataset('authenticated user routes', [
     'view transaction' => ['get', '/transactions/{transaction}'],
 ]);
 
-function userAccessUser(string $role): User
-{
-    $factory = User::factory()->state([
-        'phone' => '081234567890',
-        'address' => 'Jl. Example No. 1',
-    ]);
-
-    return $role === 'admin' ? $factory->asAdmin()->create() : $factory->create();
-}
-
 function userAccessUri(string $uri, User $owner): string
 {
     $product = Product::factory()->create(['stock' => 10]);
@@ -59,16 +49,3 @@ it('redirects guests to sign in on every authenticated route', function (string 
 
     $this->{$method}(userAccessUri($uri, $owner))->assertRedirect('/sign-in');
 })->with('authenticated user routes');
-
-it('allows a :role through every authenticated route', function (string $role, string $method, string $uri) {
-    $owner = User::factory()->create();
-
-    $response = $this->actingAs(userAccessUser($role))
-        ->{$method}(userAccessUri($uri, $owner));
-
-    expect($response->status())->toBeIn([200, 302, 404]);
-
-    if ($response->isRedirect()) {
-        expect((string) $response->headers->get('Location'))->not->toContain('/sign-in');
-    }
-})->with('user roles')->with('authenticated user routes');

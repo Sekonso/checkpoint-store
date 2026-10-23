@@ -2,15 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Database\Factories\ArticleFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Database\Factories\ArticleFactory;
-use App\Models\User;
-use App\Models\ArticleTag;
-use App\Models\ArticleTagRelation;
 
 class Article extends Model
 {
@@ -24,11 +21,11 @@ class Article extends Model
         'title',
         'content',
         'featured_image',
-        'status'
+        'status',
     ];
 
     // Accesssor, Mutator, Casts
-    
+
     protected $casts = [
         'published_at' => 'datetime',
     ];
@@ -36,11 +33,33 @@ class Article extends Model
     protected function title(): Attribute
     {
         return Attribute::make(
-            set: fn(string $value) => [
+            set: fn (string $value) => [
                 'title' => $value,
-                'slug' => \Str::slug($value),
+                'slug' => $this->generateUniqueSlug($value),
             ]
         );
+    }
+
+    /**
+     * Generate a unique slug for the article title.
+     */
+    private function generateUniqueSlug(string $title): string
+    {
+        $baseSlug = \Str::slug($title);
+        $slug = $baseSlug;
+        $suffix = 2;
+
+        while (
+            self::query()
+                ->where('slug', $slug)
+                ->when($this->exists, fn ($query) => $query->whereKeyNot($this->getKey()))
+                ->exists()
+        ) {
+            $slug = "{$baseSlug}-{$suffix}";
+            $suffix++;
+        }
+
+        return $slug;
     }
 
     // Relationships
@@ -48,10 +67,17 @@ class Article extends Model
     protected function status(): Attribute
     {
         return Attribute::make(
-            set: fn(string $value) => [
-                'status' => $value,
-                'published_at' => $value === 'published' ? now() : null,
-            ]
+            set: function (string $value) {
+                $attributes = ['status' => $value];
+
+                if ($value !== 'published') {
+                    $attributes['published_at'] = null;
+                } elseif ($this->getOriginal('status') !== 'published' || $this->published_at === null) {
+                    $attributes['published_at'] = now();
+                }
+
+                return $attributes;
+            }
         );
     }
 

@@ -6,7 +6,7 @@ Checkpoint store is demo website a gaming gear store. The site contain profile i
 
 - Language: English (US)
 - For non-test code, add comments to separate code section by name
-- For business logic function, add docblock comment
+- For business logic function, add docblock comment including short description of the function
 - Never do any write command that can changes data/storage directly, consult first
 
 <laravel-boost-guidelines>

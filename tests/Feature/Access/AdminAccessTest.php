@@ -5,6 +5,7 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Tests\Support\UserFixtures;
 
 dataset('admin routes', [
     'dashboard' => ['get', '/admin/dashboard'],
@@ -29,7 +30,7 @@ dataset('admin routes', [
 
 function adminAccessUri(string $uri): string
 {
-    $admin = User::factory()->asAdmin()->create();
+    $admin = UserFixtures::admin();
     $article = Article::factory()->create(['user_id' => $admin->id]);
     $product = Product::factory()->create();
     $transaction = Transaction::factory()->create();
@@ -54,7 +55,7 @@ it('forbids customers from every admin route', function (string $method, string 
 it('allows admins through every admin route', function (string $method, string $uri) {
     Storage::fake('public');
 
-    $response = $this->actingAs(User::factory()->asAdmin()->create())
+    $response = $this->actingAs(UserFixtures::admin())
         ->{$method}(adminAccessUri($uri));
 
     expect($response->status())->toBeIn([200, 302]);
