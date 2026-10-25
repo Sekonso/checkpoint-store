@@ -15,9 +15,7 @@ use Throwable;
 
 final class TransactionService
 {
-    public function __construct(private readonly PaymentService $payment)
-    {
-    }
+    public function __construct(private readonly PaymentService $payment) {}
 
     public function listForUser(User $user): Collection
     {
@@ -36,11 +34,11 @@ final class TransactionService
         return Transaction::query()
             ->when(
                 $search !== null && $search !== '',
-                fn(Builder $query) => $query->whereLike('invoice_number', "%{$search}%", caseSensitive: false)
+                fn (Builder $query) => $query->whereLike('invoice_number', "%{$search}%", caseSensitive: false)
             )
             ->when(
                 in_array($status, [Transaction::STATUS_PENDING, Transaction::STATUS_PAID, Transaction::STATUS_CANCELLED], true),
-                fn(Builder $query) => $query->where('status', $status)
+                fn (Builder $query) => $query->where('status', $status)
             )
             ->latest('created_at')
             ->paginate(15)
@@ -71,7 +69,7 @@ final class TransactionService
             }
         }
 
-        DB::transaction(fn() => $transaction->delete());
+        DB::transaction(fn () => $transaction->delete());
     }
 
     /**
@@ -82,7 +80,7 @@ final class TransactionService
     public function updateShipping(Transaction $transaction, string $shippingStatus): void
     {
         DB::transaction(function () use ($transaction, $shippingStatus) {
-            $locked = $transaction->lockForUpdate();
+            $locked = Transaction::lockForUpdate()->findOrFail($transaction->id);
 
             if ($locked->status !== Transaction::STATUS_PAID) {
                 throw ValidationException::withMessages([
@@ -104,7 +102,7 @@ final class TransactionService
 
         $cart = $user->cart()->with('items.product')->first();
 
-        if (!$cart || $cart->items->isEmpty()) {
+        if (! $cart || $cart->items->isEmpty()) {
             throw new CheckoutException('Your cart is empty.');
         }
 
@@ -189,7 +187,7 @@ final class TransactionService
         DB::transaction(function () use ($transaction) {
             $locked = Transaction::lockForUpdate()->findOrFail($transaction->id);
 
-            if (!$locked->isMutable()) {
+            if (! $locked->isMutable()) {
                 return;
             }
 
@@ -230,13 +228,13 @@ final class TransactionService
 
     public function paymentDetails(Transaction $transaction): ?array
     {
-        if (!$this->payment->isConfigured()) {
+        if (! $this->payment->isConfigured()) {
             return null;
         }
 
         $active = $transaction->activePayment;
 
-        if (!$active) {
+        if (! $active) {
             return null;
         }
 
@@ -251,7 +249,7 @@ final class TransactionService
     {
         $paid = $transaction->paidPayment;
 
-        if (!$paid) {
+        if (! $paid) {
             return null;
         }
 
