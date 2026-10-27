@@ -15,10 +15,9 @@ use Throwable;
 
 final class TransactionService
 {
-    public function __construct(private readonly PaymentService $payment)
-    {
-    }
+    public function __construct(private readonly PaymentService $payment) {}
 
+    /** Group a user's non-cancelled transactions into pending and completed lists. */
     public function listForUser(User $user): Collection
     {
         return Transaction::with('items')
@@ -31,16 +30,17 @@ final class TransactionService
             });
     }
 
+    /** Return a filtered, paginated transaction list for administration. */
     public function paginateForAdmin(?string $search, ?string $status): LengthAwarePaginator
     {
         return Transaction::query()
             ->when(
                 $search !== null && $search !== '',
-                fn(Builder $query) => $query->whereLike('invoice_number', "%{$search}%", caseSensitive: false)
+                fn (Builder $query) => $query->whereLike('invoice_number', "%{$search}%", caseSensitive: false)
             )
             ->when(
                 in_array($status, [Transaction::STATUS_PENDING, Transaction::STATUS_PAID, Transaction::STATUS_CANCELLED], true),
-                fn(Builder $query) => $query->where('status', $status)
+                fn (Builder $query) => $query->where('status', $status)
             )
             ->latest('created_at')
             ->paginate(15)
@@ -71,7 +71,7 @@ final class TransactionService
             }
         }
 
-        DB::transaction(fn() => $transaction->delete());
+        DB::transaction(fn () => $transaction->delete());
     }
 
     /**
@@ -96,6 +96,12 @@ final class TransactionService
         });
     }
 
+    /**
+     * Create a pending transaction from the user's cart and reserve its stock.
+     * The user's contact details must be present, and each item must be in stock.
+     *
+     * @throws CheckoutException When profile details, cart contents, or stock are invalid.
+     */
     public function checkout(User $user): Transaction
     {
         if (blank($user->phone) || blank($user->address)) {
@@ -104,7 +110,7 @@ final class TransactionService
 
         $cart = $user->cart()->with('items.product')->first();
 
-        if (!$cart || $cart->items->isEmpty()) {
+        if (! $cart || $cart->items->isEmpty()) {
             throw new CheckoutException('Your cart is empty.');
         }
 
@@ -151,6 +157,7 @@ final class TransactionService
         return $transaction;
     }
 
+    /** Cancel a transaction, release its reserved stock, and cancel its active payment. */
     public function cancel(Transaction $transaction): void
     {
         $active = $transaction->activePayment;
@@ -189,7 +196,7 @@ final class TransactionService
         DB::transaction(function () use ($transaction) {
             $locked = Transaction::lockForUpdate()->findOrFail($transaction->id);
 
-            if (!$locked->isMutable()) {
+            if (! $locked->isMutable()) {
                 return;
             }
 
@@ -213,30 +220,34 @@ final class TransactionService
         });
     }
 
+    /** Create or reuse the transaction's active payment session. */
     public function initPayment(Transaction $transaction): Payment
     {
         return $this->payment->createPayment($transaction);
     }
 
+    /** Retire the current session and create a replacement payment session. */
     public function resetPayment(Transaction $transaction): Payment
     {
         return $this->payment->resetPayment($transaction);
     }
 
+    /** Refresh a transaction's payment state from the gateway. */
     public function syncPayment(Transaction $transaction): Transaction
     {
         return $this->payment->syncFromGateway($transaction);
     }
 
+    /** Return frontend payment-session details when payments are configured and active. */
     public function paymentDetails(Transaction $transaction): ?array
     {
-        if (!$this->payment->isConfigured()) {
+        if (! $this->payment->isConfigured()) {
             return null;
         }
 
         $active = $transaction->activePayment;
 
-        if (!$active) {
+        if (! $active) {
             return null;
         }
 
@@ -247,11 +258,12 @@ final class TransactionService
         ];
     }
 
+    /** Return payment details for a settled transaction, when available. */
     public function completedPayment(Transaction $transaction): ?array
     {
         $paid = $transaction->paidPayment;
 
-        if (!$paid) {
+        if (! $paid) {
             return null;
         }
 

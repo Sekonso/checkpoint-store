@@ -13,6 +13,7 @@ use Throwable;
 
 final class ArticleService
 {
+    /** Return a filtered, paginated list of articles for administration. */
     public function paginateForAdmin(?string $search, ?string $status): LengthAwarePaginator
     {
         return Article::query()
@@ -30,6 +31,7 @@ final class ArticleService
             ->withQueryString();
     }
 
+    /** Return a filtered, paginated list of published articles. */
     public function paginatePublished(?string $search): LengthAwarePaginator
     {
         return Article::query()
@@ -43,6 +45,7 @@ final class ArticleService
             ->withQueryString();
     }
 
+    /** Get the most recently published articles up to the requested limit. */
     public function latestPublished(int $limit = 3): Collection
     {
         return Article::query()
@@ -52,11 +55,18 @@ final class ArticleService
             ->get();
     }
 
+    /** Load and return an article with its tags. */
     public function findWithTags(Article $article): Article
     {
         return $article->load('tags');
     }
 
+    /**
+     * Create an article, sync its tags, and store its featured image.
+     * Remove the newly stored image if creation fails.
+     *
+     * @param  array{title: string, content: string, status: string, tags?: array<int, int>}  $data
+     */
     public function create(array $data, int $authorId, ?UploadedFile $featuredImage): Article
     {
         $storedPath = null;
@@ -90,6 +100,12 @@ final class ArticleService
         }
     }
 
+    /**
+     * Update an article and its tags, replacing the featured image when given.
+     * Remove the newly stored image if the database update fails.
+     *
+     * @param  array{title: string, content: string, status: string, tags?: array<int, int>}  $data
+     */
     public function update(Article $article, array $data, ?UploadedFile $featuredImage = null): void
     {
         $storedPath = null;
@@ -127,6 +143,7 @@ final class ArticleService
         }
     }
 
+    /** Set an article's status to archived. */
     public function archive(Article $article): void
     {
         $article->update([
@@ -134,6 +151,7 @@ final class ArticleService
         ]);
     }
 
+    /** Delete an article and remove its featured image from public storage. */
     public function delete(Article $article): void
     {
         $imageFilename = $article->featured_image;

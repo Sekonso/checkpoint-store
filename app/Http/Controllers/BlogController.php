@@ -23,6 +23,8 @@ class BlogController extends Controller
 
     public function show(Article $article)
     {
+        abort_unless($article->status === 'published', 404);
+
         return Inertia::render('Blog/show', [
             'article' => $this->article->findWithTags($article),
         ]);

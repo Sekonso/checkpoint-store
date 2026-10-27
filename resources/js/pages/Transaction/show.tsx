@@ -124,7 +124,7 @@ export default function TransactionInvoice({
         }
 
         window.snap.pay(payment.snap_token, {
-            onSuccess: () => router.reload(),
+            onSuccess: () => handleSync(),
             onPending: () => router.reload(),
             onError: () => router.reload(),
             onClose: () => router.reload(),

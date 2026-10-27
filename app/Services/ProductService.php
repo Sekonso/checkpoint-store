@@ -14,6 +14,7 @@ use Throwable;
 
 final class ProductService
 {
+    /** Return a filtered, paginated list of in-stock products shown in the store. */
     public function paginateForStore(?string $search, ?string $categoryId): LengthAwarePaginator
     {
         return Product::query()
@@ -33,6 +34,7 @@ final class ProductService
             ->withQueryString();
     }
 
+    /** Get the newest in-stock products currently shown in the store. */
     public function latestInDisplay(int $limit = 3): Collection
     {
         return Product::query()
@@ -44,6 +46,7 @@ final class ProductService
             ->get();
     }
 
+    /** Return a product with its display data, or null when it is hidden. */
     public function getDisplayableProduct(Product $product): ?Product
     {
         if (! $product->in_display) {
@@ -53,11 +56,13 @@ final class ProductService
         return $product->load(['images', 'category']);
     }
 
+    /** Return product categories ordered by name. */
     public function categories(): Collection
     {
         return ProductCategory::query()->orderBy('name')->get();
     }
 
+    /** Return a filtered, paginated product list for administration. */
     public function paginateForAdmin(?string $search, ?string $display): LengthAwarePaginator
     {
         return Product::query()
@@ -74,6 +79,13 @@ final class ProductService
             ->withQueryString();
     }
 
+    /**
+     * Create a product and store its uploaded images in their submitted order.
+     * Remove newly stored files if the database operation fails.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  array<int, UploadedFile>  $images
+     */
     public function create(array $data, array $images): Product
     {
         $storedPaths = [];
@@ -108,6 +120,13 @@ final class ProductService
         }
     }
 
+    /**
+     * Update a product and replace or add images by their submitted order.
+     * Remove newly added files if the database operation fails.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  array<int, UploadedFile>  $images
+     */
     public function update(Product $product, array $data, array $images): void
     {
         $storedPaths = [];
@@ -155,6 +174,7 @@ final class ProductService
         }
     }
 
+    /** Delete a product and remove its image directory from public storage. */
     public function delete(Product $product): void
     {
         $productId = $product->id;

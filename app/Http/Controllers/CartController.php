@@ -6,6 +6,7 @@ use App\Models\CartItem;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class CartController extends Controller
@@ -36,6 +37,8 @@ class CartController extends Controller
             $this->cart->addItem(Auth::user(), (int) $validated['product_id']);
 
             return back();
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             report($e);
 

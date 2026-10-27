@@ -9,8 +9,8 @@ const footerNavigations = {
         { name: "FAQ", href: "/faq" },
     ],
     featured: [
-        { name: "Our Products", href: "/products" },
-        { name: "News and Blog", href: "/products/featured" },
+        { name: "Our Products", href: "/store" },
+        { name: "News and Blog", href: "/blog" },
     ],
     contacts: [
         { name: "Whatsapp", href: "https://api.whatsapp.com/send?phone=6282123615939" },

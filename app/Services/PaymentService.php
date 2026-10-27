@@ -15,7 +15,7 @@ use Midtrans\Snap;
 use Midtrans\Transaction as MidtransTransaction;
 use Throwable;
 
-final class PaymentService
+class PaymentService
 {
     /**
      * Fixed lifetime of a transaction, in hours. Set once at checkout and
@@ -23,6 +23,7 @@ final class PaymentService
      */
     public const TRANSACTION_TTL_HOURS = 24;
 
+    /** Determine whether both Midtrans credentials are configured. */
     public function isConfigured(): bool
     {
         return config('midtrans.server_key') && config('midtrans.client_key');
@@ -213,16 +214,19 @@ final class PaymentService
         });
     }
 
+    /** Cancel a payment session at Midtrans. */
     public function cancelGatewaySession(Payment $payment): void
     {
         MidtransTransaction::cancel($payment->order_id);
     }
 
+    /** Expire a payment session at Midtrans. */
     public function expireGatewaySession(Payment $payment): void
     {
         MidtransTransaction::expire($payment->order_id);
     }
 
+    /** Read the current Midtrans notification and return its relevant fields. */
     public function readNotification(): array
     {
         $notif = new Notification;
@@ -239,6 +243,7 @@ final class PaymentService
         ];
     }
 
+    /** Verify a notification signature using the configured server key. */
     public function verifySignature(array $data): bool
     {
         if (blank($data['order_id'] ?? null) || blank($data['signature_key'] ?? null)) {
@@ -255,8 +260,9 @@ final class PaymentService
         return hash_equals($expected, (string) $data['signature_key']);
     }
 
-    // Internals
+    // Private payment lifecycle helpers.
 
+    /** Lock a transaction and ensure payment actions are still allowed. */
     private function lockMutable(Transaction $transaction): Transaction
     {
         $locked = Transaction::lockForUpdate()->findOrFail($transaction->id);
@@ -265,6 +271,7 @@ final class PaymentService
         return $locked;
     }
 
+    /** Ensure the transaction is mutable and its payment deadline has not passed. */
     private function assertMutable(Transaction $transaction): void
     {
         if (! $transaction->isMutable()) {
@@ -352,6 +359,7 @@ final class PaymentService
         return (array) $remote;
     }
 
+    /** Build the gateway payload from transaction, item, and customer details. */
     private function buildPayload(Transaction $transaction, string $orderId, mixed $expiresAt): array
     {
         $transaction->loadMissing(['user', 'items']);
