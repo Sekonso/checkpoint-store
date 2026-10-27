@@ -17,6 +17,7 @@ final class TransactionService
 {
     public function __construct(private readonly PaymentService $payment) {}
 
+    /** Group a user's non-cancelled transactions into pending and completed lists. */
     public function listForUser(User $user): Collection
     {
         return Transaction::with('items')
@@ -29,6 +30,7 @@ final class TransactionService
             });
     }
 
+    /** Return a filtered, paginated transaction list for administration. */
     public function paginateForAdmin(?string $search, ?string $status): LengthAwarePaginator
     {
         return Transaction::query()
@@ -94,6 +96,12 @@ final class TransactionService
         });
     }
 
+    /**
+     * Create a pending transaction from the user's cart and reserve its stock.
+     * The user's contact details must be present, and each item must be in stock.
+     *
+     * @throws CheckoutException When profile details, cart contents, or stock are invalid.
+     */
     public function checkout(User $user): Transaction
     {
         if (blank($user->phone) || blank($user->address)) {
@@ -149,6 +157,7 @@ final class TransactionService
         return $transaction;
     }
 
+    /** Cancel a transaction, release its reserved stock, and cancel its active payment. */
     public function cancel(Transaction $transaction): void
     {
         $active = $transaction->activePayment;
@@ -211,21 +220,25 @@ final class TransactionService
         });
     }
 
+    /** Create or reuse the transaction's active payment session. */
     public function initPayment(Transaction $transaction): Payment
     {
         return $this->payment->createPayment($transaction);
     }
 
+    /** Retire the current session and create a replacement payment session. */
     public function resetPayment(Transaction $transaction): Payment
     {
         return $this->payment->resetPayment($transaction);
     }
 
+    /** Refresh a transaction's payment state from the gateway. */
     public function syncPayment(Transaction $transaction): Transaction
     {
         return $this->payment->syncFromGateway($transaction);
     }
 
+    /** Return frontend payment-session details when payments are configured and active. */
     public function paymentDetails(Transaction $transaction): ?array
     {
         if (! $this->payment->isConfigured()) {
@@ -245,6 +258,7 @@ final class TransactionService
         ];
     }
 
+    /** Return payment details for a settled transaction, when available. */
     public function completedPayment(Transaction $transaction): ?array
     {
         $paid = $transaction->paidPayment;

@@ -10,6 +10,7 @@ use Illuminate\Validation\ValidationException;
 
 final class CartService
 {
+    /** Return the user's cart, creating it when one does not exist. */
     public function getOrCreateCart(User $user): Cart
     {
         return $user->cart()->firstOrCreate([]);
@@ -50,6 +51,11 @@ final class CartService
         $cartItem->save();
     }
 
+    /**
+     * Set a cart item's quantity after checking it against available stock.
+     *
+     * @throws ValidationException When the requested quantity exceeds stock.
+     */
     public function updateQuantity(CartItem $cartItem, int $quantity): void
     {
         if ($quantity > $cartItem->product->stock) {
@@ -61,11 +67,13 @@ final class CartService
         $cartItem->update(['quantity' => $quantity]);
     }
 
+    /** Remove a single item from its cart. */
     public function removeItem(CartItem $cartItem): void
     {
         $cartItem->delete();
     }
 
+    /** Delete all items from the user's cart. */
     public function clearCart(User $user): void
     {
         $this->getOrCreateCart($user)->items()->delete();
