@@ -14,7 +14,9 @@ use Throwable;
 
 class TransactionController extends Controller
 {
-    public function __construct(private readonly TransactionService $transaction) {}
+    public function __construct(private readonly TransactionService $transaction)
+    {
+    }
 
     public function index()
     {
@@ -46,10 +48,11 @@ class TransactionController extends Controller
 
     public function cancel(Transaction $transaction)
     {
-        try {
-            abort_unless($transaction->user_id === Auth::id(), 404);
+        abort_unless($transaction->user_id === Auth::id(), 404);
 
-            if (! $transaction->isMutable()) {
+        try {
+
+            if (!$transaction->isMutable()) {
                 return back()->with('toast', [
                     'type' => 'error',
                     'message' => 'Only pending transactions can be cancelled.',
@@ -78,8 +81,9 @@ class TransactionController extends Controller
 
     public function init(Transaction $transaction)
     {
+        abort_unless($transaction->user_id === Auth::id(), 404);
+
         try {
-            abort_unless($transaction->user_id === Auth::id(), 404);
 
             $this->transaction->initPayment($transaction);
 
@@ -110,8 +114,9 @@ class TransactionController extends Controller
 
     public function reset(Transaction $transaction)
     {
+        abort_unless($transaction->user_id === Auth::id(), 404);
+
         try {
-            abort_unless($transaction->user_id === Auth::id(), 404);
 
             $this->transaction->resetPayment($transaction);
 
@@ -147,8 +152,9 @@ class TransactionController extends Controller
 
     public function sync(Transaction $transaction)
     {
+        abort_unless($transaction->user_id === Auth::id(), 404);
+
         try {
-            abort_unless($transaction->user_id === Auth::id(), 404);
 
             $this->transaction->syncPayment($transaction);
 

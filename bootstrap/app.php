@@ -14,11 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ])
     ->withRouting(
         web: [
-            __DIR__.'/../routes/web.php',
-            __DIR__.'/../routes/auth.php',
-            __DIR__.'/../routes/admin.php',
+            __DIR__ . '/../routes/web.php',
+            __DIR__ . '/../routes/auth.php',
+            __DIR__ . '/../routes/admin.php',
         ],
-        commands: __DIR__.'/../routes/console.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -34,11 +34,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->respond(function ($response, Throwable $exception, Request $request) {
             $statusCode = $response->getStatusCode();
 
-            if ($request->expectsJson()) {
-                return $response;
-            }
-
-            if (app()->hasDebugModeEnabled()) {
+            if (
+                $request->expectsJson()
+                || $statusCode < 400
+                || app()->hasDebugModeEnabled()
+            ) {
                 return $response;
             }
 
